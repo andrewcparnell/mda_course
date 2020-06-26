@@ -1,0 +1,143 @@
+---
+title: 'Class 1: An introduction to Missing Data Analysis'
+author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
+  \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
+  \newline \vspace{1cm}
+  https://andrewcparnell.github.io/mda_course 
+  \newline PRESS RECORD 
+output:
+  beamer_presentation:
+    includes:
+      in_header: header.tex
+classoption: "aspectratio=169"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = 'pdf')
+par(mar=c(3,3,2,1), mgp=c(2,.7,0), tck=-.01,las=1)
+```
+
+## Let's get started
+
+- Introduction from Novartis?
+
+- Timetable for the week
+
+- Pre-requisites
+
+## How this course works
+
+- This course lives on GitHub, which means anyone can see the slides, code, etc, and make comments on it
+- The timetable document (`index.html`) provides links to all the pdf slides and practicals
+- The slides and the practicals are all written in `Rmarkdown` format, which means you can load them up in Rstudio and see how everything was created
+- Let me know if you spot mistakes, as these can be easily updated on the GitHub page
+- There is a `mda_course.Rproj` R project file from which you should be able to run all the code
+
+## Copyright statement
+
+All the non-GitHub materials provided in the Introduction to Missing Data Analysis course are copyright of Andrew Parnell.
+
+This means:
+
+- As a user (the student) you have permission (licence) to access the materials to aid and
+support your individual studies.
+- You are not permitted to copy or distribute any materials without the relevant permission
+- As faculty we may reserve the right to remove a user in the event of any possible infringement
+
+## Course format and other details
+
+- We do two lectures in the morning (separated by a coffee break) then have a practical class where we go through some R code together
+- There is also an (optional) exercise sheet with further questions for those who are particularly keen
+- If you want to send me a private message use the message board and I will try to answer them as we go
+- Please ask lots of questions, but __MUTE YOUR MICROPHONE__ when not asking them
+- Some good books:
+
+    - _Statistical Analysis with Missing Data_ by Little and Rubin 
+    - _Bayesian Data Analysis_ by Gelman et al (chapter on Missing Data Analysis)
+    - 
+
+
+## Why care about missing data analysis?
+
+
+I will focus on missing data analysis in the case of regression
+
+## Structure of this class
+
+
+## A simple example
+
+```{r, echo = FALSE, fig.height = 5}
+# Feed conversion rate example
+plot(1,1)
+```
+
+## Missing data analysis terrible jargon
+
+MCAR
+MAR
+NMAR (MNAR)
+
+## Other jargon
+
+imputation
+amputation(!)
+monotone missing
+ignorable
+non-ignorable
+Complete case (Ch 3)
+Available case (p61/73)
+
+## Missing data analysis common notation
+
+
+## Other examples where missing data occurs
+
+
+## Bivariate MAR
+
+book P22
+
+## How people usually analyse missing data
+
+Book P23 (p35)
+
+## Available case vs complete case analysis
+
+Complete case (Ch 3)
+Available case (p61/73)
+
+## Simple imputation
+
+P67 Ch 4
+
+## Explicit vs implicit imputation
+
+P68/80
+
+## A warning about imputation
+
+P67 Ch 4
+
+## A simple demonstration of the pifalls of imputation
+
+P81/69
+
+## Regression imputation
+
+P71/83
+
+## General guidelines on imputation
+
+P81/93
+
+## Estimating uncertainties with imputed data
+
+P90/102
+
+## From simple to multiple imputation
+
+P95/107
+
+
+

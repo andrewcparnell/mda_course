@@ -1,0 +1,28 @@
+---
+title: "Introduction to Missing Data Analysis: course timetable"
+author: "Andrew Parnell"
+date: "July 2020 - online version"
+output: html_document
+---
+
+Module pre-requisites can be found [here](https://andrewcparnell.github.io/mda_course/prerequisites.html). All the raw files and code can be found [here](https://www.github.com/andrewcparnell/mda_course) (click 'Download ZIP' near the top right if you want offline versions of everything). All links below are in pdf format for you to annotate. 
+
+Please note that the course will be recorded so please turn off video if you do not wish to be shown on the recordings. 
+
+## Day 1: Standard techniques for dealing with missing data
+
+Time  | Class
+------------- | ----------------------------------------------------
+9:00-10:15 | [Introduction to missing data analysis](https://andrewcparnell.github.io/mda_course/slides/class_1_intro.pdf). Types of missing data; example data sets; simple imputation and imputation uncertainty models
+10:15-10:30 | Coffee break
+10:30-11:45 | [Likelihood and Bayesian imputation methods](https://andrewcparnell.github.io/mda_course/slides/class_2_imputation.pdf). Using the EM algorithm for imputation; Bayesian inference using data augmentation
+11:45-13:00 | [Practical 1](https://andrewcparnell.github.io/mda_course/practicals/prac_1_mice.html). Using the `mice` package
+
+## Day 2: Missing value imputation in machine learning and the state of the art
+
+Time  | Class
+------------- | ----------------------------------------------------
+9:00-10:15 | [Dealing with complex and non-ignorable missing data ](https://andrewcparnell.github.io/mda_course/slides/class_3_nimd.pdf). Mixed distributions with ignorable missingness; Bayesian models for non-ignorable missingness; time series data and missingness
+10:15-10:30 | Coffee break
+10:30-11:45 | [Missing data analysis in machine learning](https://andrewcparnell.github.io/mda_course/slides/class_2_imputation.pdf). Supervised and unsupervised learning with missing data; common machine learning models which allow missing data; missing data analysis and Bayesian trees
+11:45-13:00 | [Practical 2](https://andrewcparnell.github.io/mda_course/practicals/prac_2_R_packs.R). Advanced R packages for dealing with missing data.
