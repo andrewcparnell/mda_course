@@ -155,6 +155,7 @@ axis(side = 2, at = c(7.8, 4.3, 5.5), labels = FALSE, col.ticks = 'red')
 - Fit a model and then use it to predict the missing values (or the inverse of it for missing covariates)
 - Fill in the missing values from above or below
 - Set values to zero and include a missingness indicator (1 or 0) as an extra covariate
+- Weight the observations so that the analysis is biased to those observations in classes most likely to be missing
 - ...
 
 These methods tend to have poor or unknown bias and calibration properties for predicting missing values so will try to use more formal/established methods. 
@@ -306,52 +307,44 @@ so separate _provided_ there is no link between $\psi$ and $\theta$, otherwise y
 
 - A clever trick occurs when the missing data are __monotone missing__ which means that you can arrange it in a 'staircase' format so that once a variable is missing, it is always missing for all of the other variables. 
 
-- This means that you can write out the model in a chain of equations:
+- This means that, if the data are MAR, you can write out the model in a chain of equations:
 
-$$p(Y | \ym, )
+$$p(Y | \ym, \theta) = p(Y_1 | Y_{2}, \ldots, Y_p | \ym \theta) \times p(Y_2 | Y_{3}, \ldots, Y_p| \ym, \theta) \times \ldots \times p(Y_p |  \ym, \theta)$$
 
+- Why does this help? Because if the data are __multivariate normal__, all the conditional distributions are known 
 
-imputation
-monotone missing
-ignorable
-non-ignorable
+- Monotone missing is common in longitudinal data studies where, e.g. participants drop out of the study and so henceforth all their data is missing
 
+## Imputation
 
-## Other examples where missing data occurs
+- Filling in the missing values in a data set is called __imputation__ 
 
+- If you fill in the missing values with 'best' values, this is called __single imputation__
 
-## Bivariate MAR
+- If, by contrast, you give lots of different options for the missing values, this is called __multiple imputation__
 
-book P22
+- Imputation methods tend to focus on replacing hte missing data values (i.e. estimating $\ym$) and less on estimating model parameters $\theta$
 
-## How people usually analyse missing data
+The methods we will consider all involve multiple imputation. 
 
-Book P23 (p35)
-
-## Available case vs complete case analysis
-
-Complete case (Ch 3)
-Available case (p61/73)
-
-## Simple imputation
-
-P67 Ch 4
-
-## Explicit vs implicit imputation
-
-P68/80
-
-## A warning about imputation
-
-P67 Ch 4
-
-## A simple demonstration of the pifalls of imputation
-
-P81/69
 
 ## Regression imputation
 
-P71/83
+- One of the main methods we will focus on is __regression imputation__
+
+- In this method, each of the variables is used as the response in turn, and regression against the complete cases of the other variables, i.e.
+
+$$\hat{y}_{ij} = \hat{\beta}_{0}^{(j)} + \sum_{k \ne j} \hat{\beta}_{k}^{(j)} y_{ij}$$
+- In more complex versions, this might not be a linear regression, but a spline or other complicated function
+
+- The simplest version is a single imputation method
+
+## Stochastic regression imputation
+
+- The simple regression imputation method can be improved with simulation methods 
+
+- A better estimate of the 
+
 
 ## General guidelines on imputation
 
