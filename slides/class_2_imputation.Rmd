@@ -3,140 +3,331 @@ title: 'Class 2: Likelihood and Bayesian imputation methods'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
-  https://andrewcparnell.github.io/mda_course 
   \newline PRESS RECORD 
+  https://andrewcparnell.github.io/mda_course 
 output:
   beamer_presentation:
     includes:
       in_header: header.tex
 classoption: "aspectratio=169"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(dev = 'pdf')
+knitr::opts_chunk$set(dev = 'pdf', fig.height = 8)
 par(mar=c(3,3,2,1), mgp=c(2,.7,0), tck=-.01,las=1)
 ```
 
 ## In this class ... 
 
-- Introduction from Novartis?
+- Revision of likelihood and Bayes
 
-- Timetable for the week
+- Imputation via Bayesian inference
 
-- Pre-requisites
+- Approximate methods for imputation
 
-## How this course works
+- The `mice` package/algorithm
 
-- This course lives on GitHub, which means anyone can see the slides, code, etc, and make comments on it
-- The timetable document (`index.html`) provides links to all the pdf slides and practicals
-- The slides and the practicals are all written in `Rmarkdown` format, which means you can load them up in Rstudio and see how everything was created
-- Let me know if you spot mistakes, as these can be easily updated on the GitHub page
-- There is a `mda_course.Rproj` R project file from which you should be able to run all the code
+## Revision of likelihood
 
-## Copyright statement
+- If we are in a complete data situation we need to compute $P(Y | \theta)$ where $Y$ are our observations, and $\theta$ is the parameter(s) of our model. This is the __likelihood__
 
-All the non-GitHub materials provided in the Introduction to Missing Data Analysis course are copyright of Andrew Parnell.
+- If we assume that the data are (conditionally) independent we have $P(Y | \theta) = \prod_{i=1}^n P(Y_i | \theta)$
 
-This means:
+- In linear regression we split the data up into a response $Y$ and covariates $X$, and $\theta$ would now be our intercept, our slope, and our residual standard deviation
 
-- As a user (the student) you have permission (licence) to access the materials to aid and
-support your individual studies.
-- You are not permitted to copy or distribute any materials without the relevant permission
-- As faculty we may reserve the right to remove a user in the event of any possible infringement
+- We now find $\prod_{i=1}^n P(Y_i | X_i, \theta)$
 
-## Course format and other details
+- To get this to work we need to choose a probability distribution for $P$. For linear regression this is a normal distribution
 
-- We do two lectures in the morning (separated by a coffee break) then have a practical class where we go through some R code together
-- There is also an (optional) exercise sheet with further questions for those who are particularly keen
-- If you want to send me a private message use the message board and I will try to answer them as we go
-- Please ask lots of questions, but __MUTE YOUR MICROPHONE__ when not asking them
-- Some good books:
+## Calculating the likelihood
 
-    - _Statistical Analysis with Missing Data_ by Little and Rubin 
-    - _Bayesian Data Analysis_ by Gelman et al (chapter on Missing Data Analysis)
-    - 
-
-
-## Why care about missing data analysis?
-
-
-
-## Structure of this class
-
-
-## A simple example
-
-```{r, echo = FALSE, fig.height = 5}
-# Feed conversion rate example
-plot(1,1)
+For the Whiteside data
+```{r}
+library(MASS)
+y = whiteside$Gas
+x = whiteside$Temp
+prod(dnorm(y, 5.5 - 0.3*x, 1))
 ```
 
-## Missing data analysis terrible jargon
+This is pretty small so most people work with the log likelihood to keep numerical stability
+```{r}
+sum(dnorm(y, mean = 5.5 - 0.3*x, sd = 1, log = TRUE))
+```
 
-MCAR
-MAR
-NMAR (MNAR)
+## Maximising the likelihood
 
-## Other jargon
+- One way to find the 'best' parameters is to try lots and lots of different values and take the ones that provide the biggest log likelihood. This is very inefficient
+- Another way is to use mathematics - we can often maximise the likelihood using calculus. (We are not going to do this)
+- R has a number of very efficient built-in optimisation routines (e.g. `optim`) which will find the best values for us
 
-imputation
-amputation(!)
-monotone missing
-ignorable
-non-ignorable
-Complete case (Ch 3)
-Available case (p61/73)
+## Likelihood inference for missing data 
 
-## Missing data analysis common notation
+- Now suppose we have a missing observation: 
+```{r}
+y[5] = NA
+```
+
+- Our parameters are now $\theta = (\alpha, \beta, \sigma, x_5)$. In R we could optimise via:
+
+```{r}
+nll = function(theta) {
+  newy = y; newy[5] = theta[1]
+  -sum(dnorm(newy, mean = theta[2] + theta[3]*x, sd = theta[4], log = TRUE))
+}
+answer = nlminb(rep(2, 4), nll, lower = c(-Inf, -Inf, -Inf, 0))
+print(answer$par)
+```
+
+### Did it work?
+
+```{r}
+plot(x, y)
+points(x[5], answer$par[1], col = 'red')
+```
+
+Looks good! 
+
+- However this approach does not work well when there are large numbers of missing values
+
+## Bayes' theorem
+
+- Treating the missing data as parameters and maximising the likelihood works fine for large data sets with low degrees of missingness
+
+- To get uncertainties we rely on large sample approximations which rely on asymptotic normality. This sometimes leads to inappropriate confidence intervals
+
+- Frequentist inference also often relies on p-values which are easily gamed.
+
+- There is a saviour to the rescue...
+
+## Enter Bayes
+
+*An essay towards solving a problem on the doctrine of chances* (1763)
+
+$$P(A|B) = \frac{P(B|A) P(A)}{P(B)}$$
+
+\begin{center}
+\includegraphics[width=4cm]{Thomas_Bayes.pdf}
+\end{center}
+
+## How does Bayesian statistics work?
+
+- Bayesian statistics is based on an interpretation of Bayes' theorem
+- All quantities are divided up into _data_ (i.e. things which have been observed) and _parameters_ (i.e. things which haven't been observed)
+- We use Bayes' interpretation of the theorem to get the _posterior probability distribution_, the probability of the unobserved given the observed
+- Bayes' equation is usually written mathematically as:
+$$p(\theta|x) \propto p(x|\theta) \times p(\theta)$$
+This reads as posterior is proportional to prior times likelihood
+
+## Choosing a prior
+
+There are several choices when it comes to specifying prior distributions:
+
+- _Informative_, when there is information from a previous study, or other good external source, e.g $\theta \sim N(-30,1.5^2)$
+- _Vague_, when there is only weak information, perhaps as to the likely range of the parameter e.g. $\theta \sim N(0,10^2)$
+- _Flat_, when there is no information at all about a parameter (very rare). 
+
+In most cases, priors can only be understood in the context of the data, for example a $N(0, 100)$ prior might be uninformative 
+
+## Fitting a Bayesian model
+
+- The first step is to choose the prior and likelihood probability distributions
+- Then we fit the model to obtain a posterior distribution
+- These posterior distributions appear as _samples_ from the posterior probability distribution rather than direct estimates of means/standard deviations or equations
+- We can thus obtain complicated probability distributions for our parameters which do not need to be asymptotically normal
+
+## Gibbs sampling
+
+- Fitting a complicated model to get a posterior distribution is hard, and is not usually possible using maximisation techniques
+
+- A useful trick is to use a Gibbs sampler where we sample each parameter in turn conditional on the others
+
+- If we have set of parameters $\theta = (\theta_1, \ldots, \theta_k)$, then we create:
+
+$$P(\theta_j | \theta^{(-j)}) \propto P(Y | \theta) P(\theta_j)$$
+- Quite often the probability distributions simplify depending on the priors and the likelihoods
+
+- Even when they simplification isn't possible there are other techniques to simulate from these probability distributions
+
+- The algorithm works with starting guesses for $\theta$, then iterates through all the parameters over and over again and, theoretically, is guaranteed to end up at the posterior distribution. 
+
+## Fitting a Bayesian linear regression model in JAGS
+
+```{r}
+model_code ='
+model {
+  # Likelihood
+  for(i in 1:N) { 
+    y[i] ~ dnorm(intercept + slope*x[i], residual_sd^-2) 
+  }
+  # Priors
+  intercept ~ dnorm(0,10^-2)
+  slope ~ dnorm(0,10^-2)
+  residual_sd ~ dunif(0,10)
+}
+'
+```
+
+## Running the model
+
+::: columns
+
+:::: column
+```{r}
+library(R2jags)
+model_parameters =  c("intercept", "slope", "residual_sd")
+model_run = jags(data = list(N = length(y), y = y, x = x),
+                 parameters.to.save = model_parameters,
+                 model.file = textConnection(model_code))
+```
+
+::::
+
+:::: column
+```{r}
+print(model_run)
+```
+::::
+
+:::
+
+## Bayesian computation with JAGS and Stan
+
+- JAGS (Just Another Gibbs Sampler) fits Bayesian models using Gibbs Sampling to update the parameters in turn
+
+- It has its own language and so the code needs to be stored in a text string or a separate file
+
+- It's usually pretty fast and can run models with many parameters
+
+- A related language, Stan, is slightly more fashionable but a bit slower to run (at first) and harder to teach! (But also worth looking at for missing data analysis)
+
+- We will do some missing data analysis with JAGS in the computation session
+
+## An example of JAGS code for missing data
+
+```{r}
+model_code = '
+model
+{
+  # Likelihood
+  for (i in 1:n) {
+    y[i] ~ dnorm(intercept + slope * x[i], residual_sd^-2)
+  }
+  # Priors for the missing x values
+  for(k in 1:n_miss_x) {
+    x[miss[k]] ~ dunif(min_x, max_x)
+  }
+  
+  # Priors
+  intercept ~ dnorm(0, 100^-2)
+  slope ~ dnorm(0, 100^-2)
+  residual_sd ~ dunif(0, 100)
+}
+'
+```
 
 
-## Other examples where missing data occurs
+## Why doesn't everybody use Bayesian inference for MDA?
+
+- This approach works well for small amounts of missing data, and/or when there is good prior information on what those missing values are
+
+- It doesn't work so well for larger missing data sets as the parameter gets too big and the models get very slow or even break
+
+- Instead what people tend to do is use an approximation; use a Bayesian model to impute the missing values, then fit the model using these imputed values as though they were the prior
+
+- This is a bit of a cheat, but it does seem to work well in simulation studies
+
+## Imputing first, model later
+
+- If we take the more practical route of imputing first and modelling later, we can still use the tools of Bayesian inference
+
+- We now treat our observed and missing data as though it was a multivariate probability distribution and try to learn the parameters
+
+- If all the data are continuous, a common distribution to choose is the multivariate normal distribution
+$$Y_i \sim N(\mu, \Sigma)$$
+where $Y_i$ is the vector of observations, $\mu$ a vector of means, and $\Sigma$ the covariance matrix
+
+- With missing data this can be a really hard likelihood to right down
+
+## Multivariate imputation with ignorable monotone missingness
+
+- Recall that missingness mechanism is ignorable if we don't need to include a model for the $M$ missingness matrix
+
+- Also recall that monotone missing means that the variables $Y_{i1}, \ldots, Y_{ip}$ can be ordered such that missingness occurs in a staircase pattern; once a variable is missing on variable $j$ it is also missing for variables $j+1, \ldots, p$
+
+- Let's look at an example
+
+## Ignorable monotone missingness example
+
+- Here's a 2D example (which will always satisfy monotone missingness):
+```{r}
+whiteside3 = whiteside[,2:3]
+whiteside3[35:56,2] = NA # Last 22 values on Gas are missing
+```
+
+- The job now is just to predict those missing values. We need a likelihood $P(\yo | \ym, \mu, \Sigma)$ but this is hard to write down, e.g. 
+```
+library(mvtnorm)
+sum(dmvnorm(whiteside3, mean  = rep(5,2), sigma = diag(2), log = TRUE))
+[1] NA
+```
+
+- But we can use our trick from earlier! Let $Y_1$ and $Y_2$ be the two columns:
+$$P(Y_1, Y_2 | \mu, \Sigma) = P(Y_2 | Y_1, \mu, \Sigma) \times P(Y_1 | \mu, \Sigma)$$
+The first term we can write using our conditioning formula (see last class), and the second has no missing values!
+
+## JAGS code for the ignorable monotone missingness case
+
+```{r, eval = FALSE}
+model_code = '
+model
+{
+  # Likelihood
+  for (i in 1:N) {
+    y1[i] ~ dnorm(mu1, sd1^-2)
+  }
+  for (i in 1:N2) {
+    y2[i] ~ dnorm(mu2 + (sd2/sd1)*rho*(y1[i] - mu1), ((1-rho^2)*(sd1^2))^-2)
+  }
+  
+  # Priors
+  mu1 ~ dnorm(0, 100^-2)
+  mu2 ~ dnorm(0, 100^-2)
+  sd1 ~ dunif(0, 100)
+  sd2 ~ dunif(0, 100)
+  rho ~ dunif(-1, 1)
+}
+'
+model_run = jags(data = list(N = nrow(whiteside3), N2 = 34,
+                             y1 = whiteside3$Temp, y2 = whiteside3$Gas[1:34]),
+                 parameters.to.save = c("mu1", "mu2", 'rho'),
+                 model.file = textConnection(model_code))
+print(model_run)
+```
 
 
-## Bivariate MAR
 
-book P22
-
-## How people usually analyse missing data
-
-Book P23 (p35)
-
-## Available case vs complete case analysis
-
-Complete case (Ch 3)
-Available case (p61/73)
-
-## Simple imputation
-
-P67 Ch 4
-
-## Explicit vs implicit imputation
-
-P68/80
-
-## A warning about imputation
-
-P67 Ch 4
-
-## A simple demonstration of the pifalls of imputation
-
-P81/69
-
-## Regression imputation
-
-P71/83
-
-## General guidelines on imputation
-
-P81/93
-
-## Estimating uncertainties with imputed data
-
-P90/102
-
-## From simple to multiple imputation
-
-P95/107
+## An alternative to Gibbs: the EM algorithm
 
 
+
+## Overview
+
+## Why the EM algorithm works
+
+## Example
+
+## Why is Bayes impractical for imputation?
+
+## An alternative: the mice approach
+
+## The mice algorithm
+
+## Sensitivity checking
+
+
+## How mice works
+
+## Pooling models using mice
 

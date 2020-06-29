@@ -13,9 +13,9 @@ Please note that the course will be recorded so please turn off video if you do 
 
 Time  | Class
 ------------- | ----------------------------------------------------
-9:00-10:15 | [Introduction to missing data analysis](https://andrewcparnell.github.io/mda_course/slides/class_1_intro.pdf). Types of missing data; example data sets; simple imputation and imputation uncertainty models
+9:00-10:15 | [Introduction to missing data analysis](https://andrewcparnell.github.io/mda_course/slides/class_1_intro.pdf). Types of missing data; example data sets; missing data nomenclature, simple and multiple imputation 
 10:15-10:30 | Coffee break
-10:30-11:45 | [Likelihood and Bayesian imputation methods](https://andrewcparnell.github.io/mda_course/slides/class_2_imputation.pdf). Using the EM algorithm for imputation; Bayesian inference using data augmentation
+10:30-11:45 | [Likelihood and Bayesian imputation methods](https://andrewcparnell.github.io/mda_course/slides/class_2_imputation.pdf). Bayesian inference for missing data, Using the EM algorithm for imputation; The mice algorithm and approach
 11:45-13:00 | [Practical 1](https://andrewcparnell.github.io/mda_course/practicals/prac_1_mice.html). Using the `mice` package
 
 ## Day 2: Missing value imputation in machine learning and the state of the art

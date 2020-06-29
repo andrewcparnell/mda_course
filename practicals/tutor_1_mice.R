@@ -70,7 +70,7 @@ fit2 = lm(bmi ~ ., data = complete(imp2))
 summary(fit2)
 # Look at the standard errors - all gone down
 
-# ANother version - this time use the stochastic regression approach
+# Another version - this time use the stochastic regression approach
 imp3 = mice(nhanes, method = "norm.nob", m = 1, maxit = 1)
 fit3 = lm(bmi ~ ., data = complete(imp3))
 summary(fit3)

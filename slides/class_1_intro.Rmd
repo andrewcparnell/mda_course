@@ -3,8 +3,8 @@ title: 'Class 1: An introduction to Missing Data Analysis'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
-  \newline PRESS RECORD 
   https://andrewcparnell.github.io/mda_course 
+  \newline PRESS RECORD 
 output:
   beamer_presentation:
     includes:
@@ -24,7 +24,7 @@ set.seed(123)
 
 - Introduction from Novartis
 
-- Timetable for the week
+- Timetable for the course
 
 - Pre-requisites
 
@@ -88,7 +88,7 @@ Task: understand the relationship between gas consumption and temperature
 ```{r, echo = FALSE}
 library(MASS)
 whiteside2 = whiteside[,2:3]
-whiteside2[3,1] = NA
+whiteside2[5,2] = NA
 head(whiteside2)
 ```
 
@@ -97,7 +97,7 @@ head(whiteside2)
 :::: column
 ```{r}
 plot(whiteside2)
-abline(v = 3.0)
+abline(v = 2.9)
 ```
 ::::
 
@@ -118,7 +118,7 @@ abline(v = 3.0)
 :::: column
 ```{r}
 plot(whiteside2)
-abline(v = 3.0)
+abline(v = 2.9)
 ```
 ::::
 
@@ -140,8 +140,10 @@ abline(v = 3.0)
 :::: column
 ```{r}
 plot(whiteside2, ylim = c(1.5, 8))
-axis(side = 1, at = c(0.2, 2.9, 3.3, 7.6), labels = FALSE, col.ticks = 'red')
-axis(side = 2, at = c(7.8, 4.3, 5.5), labels = FALSE, col.ticks = 'red')
+axis(side = 1, at = c(0.2, 2.9, 3.3, 7.6), 
+     labels = FALSE, col.ticks = 'red')
+axis(side = 2, at = c(7.8, 4.3, 5.5), 
+     labels = FALSE, col.ticks = 'red')
 ```
 ::::
 
@@ -158,7 +160,7 @@ axis(side = 2, at = c(7.8, 4.3, 5.5), labels = FALSE, col.ticks = 'red')
 - Weight the observations so that the analysis is biased to those observations in classes most likely to be missing
 - ...
 
-These methods tend to have poor or unknown bias and calibration properties for predicting missing values so will try to use more formal/established methods. 
+These methods tend to have poor or unknown bias and calibration properties for predicting missing values so we will try to use more formal/established methods. 
 
 ## Two important bits of maths we need for this session
 
@@ -166,12 +168,13 @@ For events $A, B, C$:
   
   $$p(A, B| C) = p(A| B, C) \times p(B | C)$$
     
-    (This comes from Bayes' theorem)
+(This comes from Bayes' theorem)
 
-If $\left( \begin{array}{c} y_1 \\ y_2 \end{array} \right) \sim N \left( \left[ \begin{array}{c} \mu_1 \\ \mu_2 \end{array} \right], \left[] \begin{array}{cc} \Sigma_{11} & \Sigma_{12} \\  \Sigma_{21} & \Sigma_{22}  \end{array} \right] \right)$ then:
+If $\left( \begin{array}{c} y_1 \\ y_2 \end{array} \right) \sim N \left( \left[ \begin{array}{c} \mu_1 \\ \mu_2 \end{array} \right], \left[ \begin{array}{cc} \Sigma_{11} & \Sigma_{12} \\  \Sigma_{21} & \Sigma_{22}  \end{array} \right] \right)$ then:
 
-$$y_1 | y_2 = a \sim N(\mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (a - \mu_2), \Sigma_{22} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{12})$$
-(Proof of this is boring and complicated but, again, can arise from Bayes' theorem)
+$$y_1 | y_2 = a \sim N(\mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (a - \mu_2), \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{12})$$
+
+(This can also be proved using Bayes' theorem)
 
 
 
@@ -179,7 +182,7 @@ $$y_1 | y_2 = a \sim N(\mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (a - \mu_2), \Sigma_
 
 - Missing completely at random (__MCAR__) means the cause of the missingness was completely unrelated to the data. For example, the thermometer broke that day, or Mr Whiteside forgot to take a measurement
 
-- Missing at random (__MAR__) means that the missingness only depends on the observed data. Given the observed, the data are MCAR. For example, their might be more missing gas consumption values on low temperature days, because Mr Whiteside didn't want to go outside to his gas meter. 
+- Missing at random (__MAR__) means that the missingness only depends on the observed data. Given the observed information, the data are MCAR. For example, there might be more missing gas consumption values on low temperature days, because Mr Whiteside didn't want to go outside to his gas meter. 
 
 - Not missing at random (__NMAR__ or MNAR) means the missingness depends on unobserved data that we do not have. For example, we might be missing gas consumption data due to an outage that we weren't aware of. If that information is causally linked to temperature or gas consumption itself then it may change the relationship. 
 
@@ -205,9 +208,9 @@ Let:
 
 Now:
 
-- MCAR means $P(m = 1 | \yo, \ym, \psi) = P(m = 1 | \psi)$
-- MAR means $P(m = 1 | \yo, \psi) = P(m = 1 | \psi)$
-- NMAR means $P(m = 1 | \yo, \ym, \psi)$ is not reducible!
+- MCAR means $$P(m = 1 | \yo, \ym, \psi) = P(m = 1 | \psi)$$
+- MAR means $$P(m = 1 | \yo, \psi) = P(m = 1 | \psi)$$
+- NMAR means $$P(m = 1 | \yo, \ym, \psi)$$ is not reducible!
 
 ::::
 
@@ -215,7 +218,7 @@ Now:
 
 ## A simple example
 
-Suppose that the data have $n = 100$ and $p=2$ and we use a joint normal distribution to model the data. Suppose that the first variable $y_1$ is complete, and the second variable $y_2$ contains missing values)
+Suppose that the data have $n = 100$ and $p=2$ and we use a joint normal distribution to model the data. Suppose that the first variable $y_1$ is complete, and the second variable $y_2$ contains missing values
 
 The missingness probability is:
 $$P(m = 1) = \psi_0 + \psi_1 \frac{e^{\yo}}{1 + e^{\yo}} + \psi_2 \frac{e^{\ym}}{1 + e^{\ym}}$$
@@ -238,7 +241,9 @@ The different missingness mechanisms correspond to:
 n = 100
 p = 2
 y = mvrnorm(n, mu = rep(0,p), 
-            Sigma = matrix(c(1, 0.5, 0.5, 1), 2, 2))
+            Sigma = matrix(c(1, 0.5, 
+                             0.5, 1), 
+                           2, 2))
 m_mcar = rbinom(n, 1, 0.5)
 m_mar  = rbinom(n, 1, plogis(y[, 1]))
 m_nmar = rbinom(n, 1, plogis(y[, 2]))
@@ -254,8 +259,10 @@ y_nmar[which(m_nmar == 1),2] = NA
 :::: column
 
 ```{r}
-boxplot(y[,2], y_mcar[,2], y_mar[,2], y_nmar[,2],
-        names = c('Original', 'MCAR', 'MAR', 'NMAR'))
+boxplot(y[,2], y_mcar[,2],
+        y_mar[,2], y_nmar[,2],
+        names = c('Original', 'MCAR', 
+                  'MAR', 'NMAR'))
 ```
 
 ::::
@@ -309,7 +316,7 @@ so separate _provided_ there is no link between $\psi$ and $\theta$, otherwise y
 
 - This means that, if the data are MAR, you can write out the model in a chain of equations:
 
-$$p(Y | \ym, \theta) = p(Y_1 | Y_{2}, \ldots, Y_p | \ym \theta) \times p(Y_2 | Y_{3}, \ldots, Y_p| \ym, \theta) \times \ldots \times p(Y_p |  \ym, \theta)$$
+$$p(Y | \ym, \theta) = p(Y_1 | Y_{2}, \ldots, Y_p | \ym, \theta) \times p(Y_2 | Y_{3}, \ldots, Y_p| \ym, \theta) \times \ldots \times p(Y_p |  \ym, \theta)$$
 
 - Why does this help? Because if the data are __multivariate normal__, all the conditional distributions are known 
 
@@ -323,7 +330,7 @@ $$p(Y | \ym, \theta) = p(Y_1 | Y_{2}, \ldots, Y_p | \ym \theta) \times p(Y_2 | Y
 
 - If, by contrast, you give lots of different options for the missing values, this is called __multiple imputation__
 
-- Imputation methods tend to focus on replacing hte missing data values (i.e. estimating $\ym$) and less on estimating model parameters $\theta$
+- Imputation methods tend to focus on replacing the missing data values (i.e. estimating $\ym$) and less on estimating model parameters $\theta$
 
 The methods we will consider all involve multiple imputation. 
 
@@ -343,20 +350,57 @@ $$\hat{y}_{ij} = \hat{\beta}_{0}^{(j)} + \sum_{k \ne j} \hat{\beta}_{k}^{(j)} y_
 
 - The simple regression imputation method can be improved with simulation methods 
 
-- A better estimate of the 
+- For example, For a linear regression model with residual variance $\sigma^2$, we can include that uncertainty in the prediction of the missing value
 
+- We also have uncertainty in the estimation of the regression parameters
+
+So
+
+$$Var(y_{j}) = \sigma^2 \left( 1 + X^* (X^T X)^{-1} (X^*)^T \right)$$
+where $X^*$ is the matrix of explanatory variables associated with the missing value and $X = Y_{i, -j}$
+
+## Whiteside example
+
+```{r, message=FALSE, fig.height = 3.5}
+library(mice)
+plot(whiteside2)
+abline(m<-lm(Gas~Temp, data=whiteside2))
+points(2.9, predict(m, data.frame(Temp = 2.9)), col = 'red', pch = 1)
+imp_2 = mice(whiteside2, m=5, meth="norm.nob", maxit=1, print = FALSE)
+points(rep(2.8, 5), imp_2$imp$Gas, col = 'blue', pch = 2)
+imp_3 = mice(whiteside2, m=5, meth="norm", maxit=1, print = FALSE)
+points(rep(3.0, 5), imp_3$imp$Gas, col = 'green', pch = 3)
+```
+
+## Other types of MI - predictive mean matching
+
+- An alternative idea to that on the previous slide is called __predictive mean matching__
+
+- This is where we find the closest data points to missing values and use those as the predicted missing values
+
+- A further extension is to use the distance to the regression line as a weight and sample from the probability distribution to replace values as above.
+
+- This works well if the sample size is large and so there are lots of candidate donors
 
 ## General guidelines on imputation
 
-P81/93
+- If the missingness is ignorable, we need to fit a model of the form: $p(\yo | \ym, \theta)$
 
-## Estimating uncertainties with imputed data
+- We should try to use as much of the observed information as possible to build that model
 
-P90/102
+- We should avoid using single imputation
 
-## From simple to multiple imputation
+- Any models we build using the imputed data must take account of the uncertainty in it
 
-P95/107
+(More later on how to evaluate imputations)
+
+## Summary so far
+
+- The different types of imputation are MCAR (missing completely at random), MAR (missing at random), and NMAR (not missing at random)
+
+- If the missingness mechanism is ignorable (MCAR/MAR + an extra assumption) we can fit a standard statistical model to the data to try to estimate the missing values and/or estimate the model parameters
+
+- In the next session we will talk about how to build these models using both the likelihood and `mice` techniques
 
 
 
