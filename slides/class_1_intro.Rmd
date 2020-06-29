@@ -3,18 +3,21 @@ title: 'Class 1: An introduction to Missing Data Analysis'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
-  https://andrewcparnell.github.io/mda_course 
   \newline PRESS RECORD 
+  https://andrewcparnell.github.io/mda_course 
 output:
   beamer_presentation:
     includes:
       in_header: header.tex
 classoption: "aspectratio=169"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(dev = 'pdf')
+knitr::opts_chunk$set(dev = 'pdf', fig.height = 8)
 par(mar=c(3,3,2,1), mgp=c(2,.7,0), tck=-.01,las=1)
+set.seed(123)
 ```
 
 ## Let's get started
@@ -58,6 +61,11 @@ support your individual studies.
 
 ## Why care about missing data analysis?
 
+\begin{center}
+\emph{Statistics is a missing data problem} -- Rod Little
+\end{center}
+\vspace{1cm}
+
 - Most data sets I receive, whether small or large, contain missing data 
 - Usually I want to fit some kind of regression model and I don't want to have to throw away data
 - I don't really care too much about the missing data values, but I do care about getting the parameter estimates or predictions correct
@@ -70,30 +78,243 @@ _I will focus on missing data analysis in the case of regression models_
 - See an overview of how missing data analysis works (i.e. single and multiple imputation)
 - Learn to think about types of missing data analysis that might be appropriate for your work
 
-## A simple example - Whiteside data
+## A simple example - Whiteside data 
 
-```{r, echo = FALSE, fig.height = 5}
+Task: understand the relationship between gas consumption and temperature
+
+::: columns
+
+:::: column
+```{r, echo = FALSE}
 library(MASS)
+whiteside2 = whiteside[,2:3]
+whiteside2[3,1] = NA
+head(whiteside2)
+```
+
+::::
+
+:::: column
+```{r}
+plot(whiteside2)
+abline(v = 3.0)
+```
+::::
+
+:::
+
+## Questions to think about
+
+::: columns
+
+:::: column
+
+- Why is that observation missing? Was it a coding mistake or was there something special about that particular value?
+- How might we fill it in?
+- Do I care about that actual value or am I more interested in a statistical model of this relationship?
+
+::::
+
+:::: column
+```{r}
+plot(whiteside2)
+abline(v = 3.0)
+```
+::::
+
+:::
+
+## Missing data in regression models
+
+::: columns
+
+:::: column
+
+- The pattern of missingness might be more complex
+- We might have some missing response variables
+- We might have various combinations of missing explanatory variables
+- If these missing variables are at the edges of the parameter space, or are particularly influential on the response, they might have more influence on the fitted models
+
+::::
+
+:::: column
+```{r}
+plot(whiteside2, ylim = c(1.5, 8))
+axis(side = 1, at = c(0.2, 2.9, 3.3, 7.6), labels = FALSE, col.ticks = 'red')
+axis(side = 2, at = c(7.8, 4.3, 5.5), labels = FALSE, col.ticks = 'red')
+```
+::::
+
+:::
+
+## Simple options for completing the analysis
+
+- Delete all the missing observations (listwise deletion or `complete.cases`)
+- Try to analyse just pairs of the data points that are complete (pairwise deletion or `pairwise.complete.obs`)
+- Just take the overall mean/median of that variable
+- Fit a model and then use it to predict the missing values (or the inverse of it for missing covariates)
+- Fill in the missing values from above or below
+- Set values to zero and include a missingness indicator (1 or 0) as an extra covariate
+- ...
+
+These methods tend to have poor or unknown bias and calibration properties for predicting missing values so will try to use more formal/established methods. 
+
+## Two important bits of maths we need for this session
+
+For events $A, B, C$:
+  
+  $$p(A, B| C) = p(A| B, C) \times p(B | C)$$
+    
+    (This comes from Bayes' theorem)
+
+If $\left( \begin{array}{c} y_1 \\ y_2 \end{array} \right) \sim N \left( \left[ \begin{array}{c} \mu_1 \\ \mu_2 \end{array} \right], \left[] \begin{array}{cc} \Sigma_{11} & \Sigma_{12} \\  \Sigma_{21} & \Sigma_{22}  \end{array} \right] \right)$ then:
+
+$$y_1 | y_2 = a \sim N(\mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (a - \mu_2), \Sigma_{22} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{12})$$
+(Proof of this is boring and complicated but, again, can arise from Bayes' theorem)
+
+
+
+## Missing data analysis (terrible) jargon
+
+- Missing completely at random (__MCAR__) means the cause of the missingness was completely unrelated to the data. For example, the thermometer broke that day, or Mr Whiteside forgot to take a measurement
+
+- Missing at random (__MAR__) means that the missingness only depends on the observed data. Given the observed, the data are MCAR. For example, their might be more missing gas consumption values on low temperature days, because Mr Whiteside didn't want to go outside to his gas meter. 
+
+- Not missing at random (__NMAR__ or MNAR) means the missingness depends on unobserved data that we do not have. For example, we might be missing gas consumption data due to an outage that we weren't aware of. If that information is causally linked to temperature or gas consumption itself then it may change the relationship. 
+
+MAR is the most common scenario and we will focus on that today, and cover MNAR in more detail in later classes. 
+
+## Missing data analysis mathematical notation
+
+::: columns
+
+:::: column
+
+Let: 
+
+- $Y$ be the variables we are interested in, as a matrix of $n$ observations and $p$ variables
+- $\yo$ the observed data
+- $\ym$ the missing data
+- $M$ an $n \times p$ matrix that defines which observations/variables are missing, with $m_{ij} = 1$ if observation $i$ and variable $j$ are missing, and 0 otherwise
+- $\psi$ some parameters governing the missing data mechanism
+
+::::
+
+:::: column
+
+Now:
+
+- MCAR means $P(m = 1 | \yo, \ym, \psi) = P(m = 1 | \psi)$
+- MAR means $P(m = 1 | \yo, \psi) = P(m = 1 | \psi)$
+- NMAR means $P(m = 1 | \yo, \ym, \psi)$ is not reducible!
+
+::::
+
+:::
+
+## A simple example
+
+Suppose that the data have $n = 100$ and $p=2$ and we use a joint normal distribution to model the data. Suppose that the first variable $y_1$ is complete, and the second variable $y_2$ contains missing values)
+
+The missingness probability is:
+$$P(m = 1) = \psi_0 + \psi_1 \frac{e^{\yo}}{1 + e^{\yo}} + \psi_2 \frac{e^{\ym}}{1 + e^{\ym}}$$
+
+The different missingness mechanisms correspond to:
+
+- MCAR: $\psi_1 = \psi_2 = 0$
+- MAR: $\psi_2 = 0$
+- NMAR: $\psi_2 \ne 0$
+
+
+## Simple example (cont)
+
+::: columns
+
+:::: column
+
+
+```{r}
+n = 100
+p = 2
+y = mvrnorm(n, mu = rep(0,p), 
+            Sigma = matrix(c(1, 0.5, 0.5, 1), 2, 2))
+m_mcar = rbinom(n, 1, 0.5)
+m_mar  = rbinom(n, 1, plogis(y[, 1]))
+m_nmar = rbinom(n, 1, plogis(y[, 2]))
+y_mcar = y_mar = y_nmar = y
+y_mcar[which(m_mcar == 1),2] = NA
+y_mar[which(m_mar == 1),2] = NA
+y_nmar[which(m_nmar == 1),2] = NA
 
 ```
 
-## Missing data analysis terrible jargon
+::::
 
-MCAR
-MAR
-NMAR (MNAR)
+:::: column
 
-## Other jargon
+```{r}
+boxplot(y[,2], y_mcar[,2], y_mar[,2], y_nmar[,2],
+        names = c('Original', 'MCAR', 'MAR', 'NMAR'))
+```
+
+::::
+
+::: 
+
+## Fitting a model and imputing data at the same time
+
+- Usually, we want to estimate a model (e.g. a linear regression model) at the same time as imputing the missing values. 
+
+- Assume $\theta$ are the parameters associated with that model, and that $\psi$ are the missingness parameters as before
+
+- We need to find
+
+$$p(\yo, M | \ym, \theta, \psi) = p(m | \yo, \ym, \psi) \times p(\yo | \ym, \theta)$$
+
+- The first term is the missingness probability model, the second term is the model (e.g. linear regression) that we want to fit.
+
+- The trick is to think about these in the different MCAR, MAR, and NMAR circumstances
+
+## Fitting models under missingness assumptions
+
+- If MCAR:
+
+$$p(\yo, M | \ym, \theta, \psi) = p(m | \psi) \times p(\yo | \ym, \theta)$$
+so the models are completely separate 
+
+- If MAR:
+
+$$p(\yo, M | \ym, \theta, \psi) = p(m | \yo, \psi) \times p(\yo | \ym, \theta)$$
+so separate _provided_ there is no link between $\psi$ and $\theta$, otherwise you need both models
+
+- If NMAR. No simplification. So you need both models to be able to fit anything
+
+## Ignorability
+
+- Most importantly, if you are in an MCAR or MAR situation where the parameters $\psi$ and $\theta$ are not linked, the missingness is known as __ignorable__
+
+- This means you just need to fit the statistical bit of the model: $p(\yo | \ym, \theta)$
+
+- This is not a free lunch! Fitting this model might be extremely fiddly as you still might need to estimate the missing data $\ym$ to get any results
+
+- If you are in an MAR situation with $\psi$ and $\theta$ linked, or in an NMAR situation, then it is said that the missingness is __non-ignorable__
+
+
+## Some final bits of jargon
+
+- The pattern of missingness can sometimes be important, especially in MAR models where you need to include the missing data as parameters
+
+- A clever trick occurs when the missing data are __monotone missing__ which means that you can arrange it in a 'staircase' format so that once a variable is missing, it is always missing for all of the other variables. 
+
+- This means that you can write out the model in a chain of equations:
+
+$$p(Y | \ym, )
+
 
 imputation
-amputation(!)
 monotone missing
 ignorable
 non-ignorable
-Complete case (Ch 3)
-Available case (p61/73)
-
-## Missing data analysis common notation
 
 
 ## Other examples where missing data occurs
