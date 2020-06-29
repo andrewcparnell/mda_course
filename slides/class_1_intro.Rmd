@@ -19,7 +19,7 @@ par(mar=c(3,3,2,1), mgp=c(2,.7,0), tck=-.01,las=1)
 
 ## Let's get started
 
-- Introduction from Novartis?
+- Introduction from Novartis
 
 - Timetable for the week
 
@@ -54,22 +54,27 @@ support your individual studies.
 
     - _Statistical Analysis with Missing Data_ by Little and Rubin 
     - _Bayesian Data Analysis_ by Gelman et al (chapter on Missing Data Analysis)
-    - 
-
+    - _Flexible Imputation of Missing Data_ by Stef van Buuren
 
 ## Why care about missing data analysis?
 
+- Most data sets I receive, whether small or large, contain missing data 
+- Usually I want to fit some kind of regression model and I don't want to have to throw away data
+- I don't really care too much about the missing data values, but I do care about getting the parameter estimates or predictions correct
 
-I will focus on missing data analysis in the case of regression
+_I will focus on missing data analysis in the case of regression models_
 
 ## Structure of this class
 
+- Learn some of the missing data analysis jargon
+- See an overview of how missing data analysis works (i.e. single and multiple imputation)
+- Learn to think about types of missing data analysis that might be appropriate for your work
 
-## A simple example
+## A simple example - Whiteside data
 
 ```{r, echo = FALSE, fig.height = 5}
-# Feed conversion rate example
-plot(1,1)
+library(MASS)
+
 ```
 
 ## Missing data analysis terrible jargon

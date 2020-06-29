@@ -1,5 +1,5 @@
 ---
-title: 'Class 1: An introduction to Missing Data Analysis'
+title: 'Class 2: Likelihood and Bayesian imputation methods'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(dev = 'pdf')
 par(mar=c(3,3,2,1), mgp=c(2,.7,0), tck=-.01,las=1)
 ```
 
-## Let's get started
+## In this class ... 
 
 - Introduction from Novartis?
 

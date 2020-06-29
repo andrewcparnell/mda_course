@@ -16,11 +16,13 @@ Install the following using the corresponding links
 
 -	Rstudio (optional but recommended): [https://www.rstudio.com](https://www.rstudio.com)
 
+- Install JAGS: [http://mcmc-jags.sourceforge.net](http://mcmc-jags.sourceforge.net)
+
 ### Step 2
 
 Now install the following packages by going into Rstudio (or R) by typing:
 ```{r,eval=FALSE}
-install.packages(c('mice'))
+install.packages(c('mice', 'R2jags', 'lattice'))
 ```
 
 Note: this might take a while as these are pretty big and complicated packages.
