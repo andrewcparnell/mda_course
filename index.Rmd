@@ -18,7 +18,7 @@ Time  | Class
 10:30-11:45 | [Likelihood and Bayesian imputation methods](https://andrewcparnell.github.io/mda_course/slides/class_2_imputation.pdf). Bayesian inference for missing data, Using the EM algorithm for imputation; The mice algorithm and approach
 11:45-13:00 | [Practical 1](https://andrewcparnell.github.io/mda_course/practicals/prac_1_mice.R). Using the `mice` package [Practical 2](https://andrewcparnell.github.io/mda_course/practicals/prac_2_jags_mda.R). Missing data analysis with JAGS
 
-## Day 2: Missing value imputation in machine learning and the state of the art
+## Day 2: Complex imputation and missing data analysis in machine learning
 
 Time  | Class
 ------------- | ----------------------------------------------------
