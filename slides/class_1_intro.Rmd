@@ -36,16 +36,19 @@ set.seed(123)
 - Let me know if you spot mistakes, as these can be easily updated on the GitHub page
 - There is a `mda_course.Rproj` R project file from which you should be able to run all the code
 
-## Copyright statement
+## Pre-requisites
 
-All the non-GitHub materials provided in the Introduction to Missing Data Analysis course are copyright of Andrew Parnell.
+These things I'm assuming you already know:
 
-This means:
+1. Understanding of basic univariate probability distributions such as the normal and the binomial
 
-- As a user (the student) you have permission (licence) to access the materials to aid and
-support your individual studies.
-- You are not permitted to copy or distribute any materials without the relevant permission
-- As faculty we may reserve the right to remove a user in the event of any possible infringement
+1. Understanding of basic probability theory and e.g. Bayes' theorem
+
+1. Understanding of linear regression, least squares, and interpreting the output of e.g. `lm`
+
+1. Knowing how to use R and basic plots
+
+It helps if you know a little bit about multivariate distributions such as the multivariate normal and multinomial
 
 ## Course format and other details
 

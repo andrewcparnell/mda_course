@@ -3,8 +3,8 @@ title: 'Class 2: Likelihood and Bayesian imputation methods'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
-  \newline PRESS RECORD 
   https://andrewcparnell.github.io/mda_course 
+  \newline PRESS RECORD 
 output:
   beamer_presentation:
     includes:
@@ -80,7 +80,7 @@ answer = nlminb(rep(2, 4), nll, lower = c(-Inf, -Inf, -Inf, 0))
 print(answer$par)
 ```
 
-### Did it work?
+## Did it work?
 
 ```{r}
 plot(x, y)
@@ -171,26 +171,25 @@ model {
 
 ## Running the model
 
-::: columns
-
-:::: column
-```{r}
+```{r, messages = 'hide'}
 library(R2jags)
-model_parameters =  c("intercept", "slope", "residual_sd")
-model_run = jags(data = list(N = length(y), y = y, x = x),
-                 parameters.to.save = model_parameters,
-                 model.file = textConnection(model_code))
+mod_par =  c("intercept", 
+                      "slope",
+                      "residual_sd")
+model_run = jags(data = 
+                   list(N = length(y), 
+                        y = y, x = x),
+                 parameters.to.save = 
+                   mod_par,
+                 model.file =
+                   textConnection(model_code))
 ```
 
-::::
+## Output
 
-:::: column
 ```{r}
 print(model_run)
 ```
-::::
-
-:::
 
 ## Bayesian computation with JAGS and Stan
 
@@ -218,7 +217,6 @@ model
   for(k in 1:n_miss_x) {
     x[miss[k]] ~ dunif(min_x, max_x)
   }
-  
   # Priors
   intercept ~ dnorm(0, 100^-2)
   slope ~ dnorm(0, 100^-2)
@@ -286,11 +284,8 @@ model
   # Likelihood
   for (i in 1:N) {
     y1[i] ~ dnorm(mu1, sd1^-2)
-  }
-  for (i in 1:N2) {
     y2[i] ~ dnorm(mu2 + (sd2/sd1)*rho*(y1[i] - mu1), ((1-rho^2)*(sd1^2))^-2)
   }
-  
   # Priors
   mu1 ~ dnorm(0, 100^-2)
   mu2 ~ dnorm(0, 100^-2)
@@ -299,35 +294,141 @@ model
   rho ~ dunif(-1, 1)
 }
 '
-model_run = jags(data = list(N = nrow(whiteside3), N2 = 34,
-                             y1 = whiteside3$Temp, y2 = whiteside3$Gas[1:34]),
-                 parameters.to.save = c("mu1", "mu2", 'rho'),
-                 model.file = textConnection(model_code))
-print(model_run)
 ```
 
+## Running the model
+
+```{r, message=FALSE}
+model_run = jags(data = list(N = nrow(whiteside3),
+                             y1 = whiteside3$Temp, y2 = whiteside3$Gas),
+                 parameters.to.save = c("y2"),
+                 model.file = textConnection(model_code))
+plot(whiteside3$Temp, model_run$BUGSoutput$median$y2, col = is.na(whiteside3$Gas)+1)
+```
 
 
 ## An alternative to Gibbs: the EM algorithm
 
+- Gibbs sampling can be a little bit slow if there are lots of missing values
 
+- A neat alternative is the __Expectation Maximisation__ (EM) algorithm which finds the posterior mode in the parameters
 
-## Overview
+- This means that it ignore the parameter uncertainty in the imputation but will give us best guesses of the parameters in a model (in the previous case $\mu$ and $\Sigma$)
 
-## Why the EM algorithm works
+- The method works by guessing at the missing values, then finding the ML estimates of the now 'complete data', before re-guessing the missing values again
 
-## Example
+## Mathematics of EM
 
-## Why is Bayes impractical for imputation?
+For a missing data analysis, EM works by first finding the expected complete-data likelihood for some parameter guesses $\theta^{(t)}$ at iteration $t$:
 
-## An alternative: the mice approach
+- The E step
+$$Q(\theta | \theta^{(t)}) = \int P(\yo, \ym | \theta) \times P(\ym | \yo, \theta = \theta^{(t)}) d \ym$$
+- The M step then maximises this quantity:
+$$Q(\theta^{t+1}| \theta{(t)} \ge Q(\theta| \theta{(t)} \mbox{ for all } \theta$$
+
+It's easier to explain with an example!
+
+## EM example for missing data
+
+To be Done!
+
+## Some comments on the EM algorithm
+
+- The EM algorithm often works in general missingness problems and not just in ignorable and or MAR approaches
+
+- However it does require a bit of mathematics to set up and can be slow to converge
+
+- It can be viewed as a special 'optimised' version of Gibbs sampling, or as a coordinate ascent algorithm
+
+- There are dozens of extensions to EM, some of which will be appropriate for more advanced problems
+
+## Summary so far
+
+- There are two broad approaches, either:
+
+    1. Estimate your missing data at the same time as fitting your model, or
+    2. Fill in your missing values using multiple imputation and then fit your model using those values
+
+- We can do either for ignorable data using Bayesian methods and/or the EM algorithm
+
+- These however can be slow to fit and require a bit of heavy maths to set up
+
+- None of the methods we have looked at so far works for mixed continuous/categorical data
+
+- `mice` simplifies all this by just setting up models for option (2) without worrying too much about the theory
+
+## The `mice` approach
+
+- `mice` is an R package that has been around for at least 15 years
+
+- It uses a method called _Fully Conditional Specification_ (FCS) in which the conditional distributions:
+$$P(Y_j | Y^{(-j)}, X, M, \theta)$$
+are all specified up front
+
+- It looks a bit like a Gibbs sampling algorithm but is not guaranteed to produce a valid posterior distribution
 
 ## The mice algorithm
 
+1. Specify imputation models for $Y_j | Y_{(-j)}, X, M, \theta$ with $j=1, \ldots,p$
+
+2. For each variable guess at starting values of the imputed data $\hat{Y}_j^{t=0}$
+
+3. Loop over iterations $t$ and variables $j$. Define $\dot{Y}^{t}_{-j}$ as the current 'complete' data set
+
+4. Draw parameters $\dot{\theta_j^t} \sim P(\theta_j^t | Y_j^{\mbox{obs}}, \dot{Y}^{t}_{-j}, M)$
+
+6. Draw imputations  Draw parameters $\dot{Y_j^t} \sim P(Y_j^{\mbox{mis}} | Y_j^{\mbox{obs}}, \dot{Y}^{t}_{-j}, M, \dot{\theta_j^t})$
+
+## Key aspects of the `mice` approach
+
+- It allows for great flexibility because if the data are different types (continuous, counts, factors, etc) they can all have their own imputation model
+
+- It usually only produces 5-40 imputed data values. Compare this with the Bayesian JAGS approach which produces many thousands
+
+- In certain circumstances (e.g. if all the conditional distributions are normal) it will be equivalent to the joint modelling approach
+
+- Because of its set up, the issue of monotone missingness is mostly irrelevant (though it might make the algorithm work better because there is an easier to find valid joint distribution)
+
+## Modelling with imputed data
+
+The usual steps to working with `mice` is:
+
+1. Impute your data multiple times (usually `m=5` or more)
+
+1. Fit your model to each imputed data set
+
+1. Pool your results to get an overview of the fitting approach whilst marginalising over the missing data
+
+- `mice` uses special S3 classes and functions for each of these different steps to make the code clearer
+
+## Pooling different models
+
+- The pooling step in `mice` is one of the weaker aspects of the package
+
+- Because the model is not set in a fully Bayesian framework we have to rely on traditional asymptotic normality of the parameters
+
+- If the parameters are constrained then an appropriate function (e.g. log for positive data, logit for (0,1) data) must be used to 'unconstrain' it
+
+- You can then perform weighted averaging, and some slightly obscure mathematics to combine the test statistics to produce 'valid' p-values
+
 ## Sensitivity checking
 
+- Some get confused because `mice` produces a number of imputed data sets (argument `m`) over a set of iterations (argument `maxit`)
 
-## How mice works
+- `m` is the number of imputed data sets
 
-## Pooling models using mice
+- `maxit`, is the number of iterations for _each_ imputed variable and data set
 
+- We usually plot the iterations for each variable (and imputation) to see if they look stable. Usually we only need a few iterations in these algorithms
+
+- If some variables are known to be related (e.g. through prior information) this can be specified with the argument `predictorMatrix`
+
+## Summary
+
+- We have seen the gold standard for imputation through Bayesian inference, though this doesn't always work well without strong prior information
+
+- We have seen an alternative technique which first imputes the data and then combines the parameter estimates
+
+- This can be done either using Bayes again, or through EM, or via FCS with `mice`
+
+- Now on to actually use the package!
