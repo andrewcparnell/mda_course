@@ -3,8 +3,8 @@ title: 'Class 2: Likelihood and Bayesian imputation methods'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
-  https://andrewcparnell.github.io/mda_course 
   \newline PRESS RECORD 
+  https://andrewcparnell.github.io/mda_course 
 output:
   beamer_presentation:
     includes:
@@ -82,7 +82,7 @@ print(answer$par)
 
 ## Did it work?
 
-```{r}
+```{r, fig.height = 6}
 plot(x, y)
 points(x[5], answer$par[1], col = 'red')
 ```
@@ -146,6 +146,7 @@ In most cases, priors can only be understood in the context of the data, for exa
 - If we have set of parameters $\theta = (\theta_1, \ldots, \theta_k)$, then we create:
 
 $$P(\theta_j | \theta^{(-j)}) \propto P(Y | \theta) P(\theta_j)$$
+
 - Quite often the probability distributions simplify depending on the priors and the likelihoods
 
 - Even when they simplification isn't possible there are other techniques to simulate from these probability distributions
@@ -171,7 +172,7 @@ model {
 
 ## Running the model
 
-```{r, messages = 'hide'}
+```{r, message = FALSE}
 library(R2jags)
 mod_par =  c("intercept", 
                       "slope",
@@ -185,7 +186,7 @@ model_run = jags(data =
                    textConnection(model_code))
 ```
 
-## Output
+## Output {.smaller}
 
 ```{r}
 print(model_run)
@@ -275,9 +276,9 @@ sum(dmvnorm(whiteside3, mean  = rep(5,2), sigma = diag(2), log = TRUE))
 $$P(Y_1, Y_2 | \mu, \Sigma) = P(Y_2 | Y_1, \mu, \Sigma) \times P(Y_1 | \mu, \Sigma)$$
 The first term we can write using our conditioning formula (see last class), and the second has no missing values!
 
-## JAGS code for the ignorable monotone missingness case
+## JAGS code for the ignorable monotone missingness case {.smaller}
 
-```{r, eval = FALSE}
+```{r}
 model_code = '
 model
 {
@@ -298,7 +299,7 @@ model
 
 ## Running the model
 
-```{r, message=FALSE}
+```{r, message=FALSE, results = 'hide', fig.height = 4}
 model_run = jags(data = list(N = nrow(whiteside3),
                              y1 = whiteside3$Temp, y2 = whiteside3$Gas),
                  parameters.to.save = c("y2"),
@@ -334,7 +335,7 @@ To be Done!
 
 ## Some comments on the EM algorithm
 
-- The EM algorithm often works in general missingness problems and not just in ignorable and or MAR approaches
+- The EM algorithm often works in general missingness problems and not just in ignorable and/or MAR approaches
 
 - However it does require a bit of mathematics to set up and can be slow to converge
 
