@@ -324,7 +324,7 @@ For a missing data analysis, EM works by first finding the expected complete-dat
 - The E step
 $$Q(\theta | \theta^{(t)}) = \int P(\yo, \ym | \theta) \times P(\ym | \yo, \theta = \theta^{(t)}) d \ym$$
 - The M step then maximises this quantity:
-$$Q(\theta^{t+1}| \theta{(t)} \ge Q(\theta| \theta{(t)} \mbox{ for all } \theta$$
+$$Q(\theta| \theta{(t)} \ge Q(\theta| \theta^{(t)}) \mbox{ for all } \theta$$
 
 It's easier to explain with an example!
 
