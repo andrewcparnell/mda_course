@@ -3,8 +3,8 @@ title: 'Class 1: An introduction to Missing Data Analysis'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
-  https://andrewcparnell.github.io/mda_course 
   \newline PRESS RECORD 
+  https://andrewcparnell.github.io/mda_course 
 output:
   beamer_presentation:
     includes:
@@ -53,7 +53,6 @@ It helps if you know a little bit about multivariate distributions such as the m
 ## Course format and other details
 
 - We do two lectures in the morning (separated by a coffee break) then have a practical class where we go through some R code together
-- There is also an (optional) exercise sheet with further questions for those who are particularly keen
 - If you want to send me a private message use the message board and I will try to answer them as we go
 - Please ask lots of questions, but __MUTE YOUR MICROPHONE__ when not asking them
 - Some good books:
@@ -72,8 +71,6 @@ It helps if you know a little bit about multivariate distributions such as the m
 - Most data sets I receive, whether small or large, contain missing data 
 - Usually I want to fit some kind of regression model and I don't want to have to throw away data
 - I don't really care too much about the missing data values, but I do care about getting the parameter estimates or predictions correct
-
-_I will focus on missing data analysis in the case of regression models_
 
 ## Structure of this class
 
@@ -175,7 +172,7 @@ For events $A, B, C$:
 
 If $\left( \begin{array}{c} y_1 \\ y_2 \end{array} \right) \sim N \left( \left[ \begin{array}{c} \mu_1 \\ \mu_2 \end{array} \right], \left[ \begin{array}{cc} \Sigma_{11} & \Sigma_{12} \\  \Sigma_{21} & \Sigma_{22}  \end{array} \right] \right)$ then:
 
-$$y_1 | y_2 = a \sim N(\mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (a - \mu_2), \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{12})$$
+$$y_1 | y_2 \sim N(\mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (y_2 - \mu_2), \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{21})$$
 
 (This can also be proved using Bayes' theorem)
 
@@ -191,7 +188,7 @@ $$y_1 | y_2 = a \sim N(\mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (a - \mu_2), \Sigma_
 
 MAR is the most common scenario and we will focus on that today, and cover MNAR in more detail in later classes. 
 
-## Missing data analysis mathematical notation
+## Missing data analysis mathematical notation 
 
 ::: columns
 
@@ -207,12 +204,11 @@ Let:
 
 ::::
 
-:::: column
+:::: column 
 
 Now:
-
 - MCAR means $$P(m = 1 | \yo, \ym, \psi) = P(m = 1 | \psi)$$
-- MAR means $$P(m = 1 | \yo, \psi) = P(m = 1 | \psi)$$
+- MAR means $$P(m = 1 | \yo, \ym, \psi)$$ \ $$= P(m = 1 | \yo, \psi)$$
 - NMAR means $$P(m = 1 | \yo, \ym, \psi)$$ is not reducible!
 
 ::::
@@ -319,7 +315,7 @@ so separate _provided_ there is no link between $\psi$ and $\theta$, otherwise y
 
 - This means that, if the data are MAR, you can write out the model in a chain of equations:
 
-$$p(Y | \ym, \theta) = p(Y_1 | Y_{2}, \ldots, Y_p | \ym, \theta) \times p(Y_2 | Y_{3}, \ldots, Y_p| \ym, \theta) \times \ldots \times p(Y_p |  \ym, \theta)$$
+$$p(Y | \ym, \theta) = p(Y_1 | Y_{2}, \ldots, Y_p , \theta) \times p(Y_2 | Y_{3}, \ldots, Y_p, \theta) \times \ldots \times p(Y_p | \theta)$$
 
 - Why does this help? Because if the data are __multivariate normal__, all the conditional distributions are known 
 
@@ -345,6 +341,7 @@ The methods we will consider all involve multiple imputation.
 - In this method, each of the variables is used as the response in turn, and regression against the complete cases of the other variables, i.e.
 
 $$\hat{y}_{ij} = \hat{\beta}_{0}^{(j)} + \sum_{k \ne j} \hat{\beta}_{k}^{(j)} y_{ij}$$
+
 - In more complex versions, this might not be a linear regression, but a spline or other complicated function
 
 - The simplest version is a single imputation method

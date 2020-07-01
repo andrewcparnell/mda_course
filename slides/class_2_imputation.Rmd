@@ -1,5 +1,5 @@
 ---
-title: 'Class 2: Likelihood and Bayesian imputation methods'
+title: 'Class 2: Likelihood and Bayesian Imputation Methods'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
@@ -325,19 +325,30 @@ For a missing data analysis, EM works by first finding the expected complete-dat
 - The E step
 $$Q(\theta | \theta^{(t)}) = \int P(\yo, \ym | \theta) \times P(\ym | \yo, \theta = \theta^{(t)}) d \ym$$
 - The M step then maximises this quantity:
-$$Q(\theta| \theta{(t)} \ge Q(\theta| \theta^{(t)}) \mbox{ for all } \theta$$
+
+$$\theta^{(t+1)} = \argmax_\theta Q(\theta| \theta^{(t)})$$
 
 It's easier to explain with an example!
 
 ## EM example for missing data
 
-To be Done!
+Let's fit the monotone missingness example from above. We first need to compute:
+
+$$Q(\theta | \theta^{(t)}) = \int P(\yo, \ym | \theta) \times P(\ym | \yo, \theta = \theta^{(t)}) d \ym$$
+Some very dull algebra gives:
+
+$$y_{2i}^{(t+1)} = \mu_2^{(k)}+ \frac{\sigma_{12}^{(k)}}{\sigma_{11}^{(k)}} \left(y_{1i} - \mu_1^{(k)} \right) $$
+$$\sigma_{22}^{(k+1)} = \left( \sum (y_{2i}^{(k)})^2 - \frac{\left( \sum y_{2i}^{(k)} \right)^2}{n} \right) / n $$
+$$\sigma_{12}^{(k+1)} = \left( \sum  y_{1i} y_{2i}^{(k)} - \frac{\left( \sum y_{1i} \sum y_{2i}^{(k)} \right)^2}{n} \right) / n,\; \mu_2^{(k)} = \frac{ \sum y_{2i}^{(k)}}{ n}  $$
+
 
 ## Some comments on the EM algorithm
 
 - The EM algorithm often works in general missingness problems and not just in ignorable and/or MAR approaches
 
 - However it does require a bit of mathematics to set up and can be slow to converge
+
+- The reason its helpful is because you only have to find the expected value of the likelihood over the missing data, and not completely integrate it out
 
 - It can be viewed as a special 'optimised' version of Gibbs sampling, or as a coordinate ascent algorithm
 
