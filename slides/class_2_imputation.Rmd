@@ -3,8 +3,8 @@ title: 'Class 2: Likelihood and Bayesian Imputation Methods'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
-  \newline PRESS RECORD 
   https://andrewcparnell.github.io/mda_course 
+  \newline PRESS RECORD 
 output:
   beamer_presentation:
     includes:
@@ -37,8 +37,6 @@ par(mar=c(3,3,2,1), mgp=c(2,.7,0), tck=-.01,las=1)
 
 - In linear regression we split the data up into a response $Y$ and covariates $X$, and $\theta$ would now be our intercept, our slope, and our residual standard deviation
 
-- We now find $\prod_{i=1}^n P(Y_i | X_i, \theta)$
-
 - To get this to work we need to choose a probability distribution for $P$. For linear regression this is a normal distribution
 
 ## Calculating the likelihood
@@ -60,7 +58,7 @@ sum(dnorm(y, mean = 5.5 - 0.3*x, sd = 1, log = TRUE))
 
 - One way to find the 'best' parameters is to try lots and lots of different values and take the ones that provide the biggest log likelihood. This is very inefficient
 - Another way is to use mathematics - we can often maximise the likelihood using calculus. (We are not going to do this)
-- R has a number of very efficient built-in optimisation routines (e.g. `optim`) which will find the best values for us
+- R has a number of very efficient built-in optimisation routines (e.g. `nlmin` and `optimx`) which will find the best values for us
 
 ## Likelihood inference for missing data 
 
@@ -128,7 +126,7 @@ There are several choices when it comes to specifying prior distributions:
 - _Vague_, when there is only weak information, perhaps as to the likely range of the parameter e.g. $\theta \sim N(0,10^2)$
 - _Flat_, when there is no information at all about a parameter (very rare). 
 
-In most cases, priors can only be understood in the context of the data, for example a $N(0, 100)$ prior might be uninformative 
+In most cases, priors can only be understood in the context of the data, for example a $N(0, 100)$ prior might be uninformative for one data set but extremely informative for another
 
 ## Fitting a Bayesian model
 
@@ -172,7 +170,7 @@ model {
 
 ## Running the model
 
-```{r, message = FALSE}
+```{r, message = FALSE, results = 'hide'}
 library(R2jags)
 mod_par =  c("intercept", 
                       "slope",
@@ -186,11 +184,15 @@ model_run = jags(data =
                    textConnection(model_code))
 ```
 
-## Output {.smaller}
+## Output 
+
+\small
 
 ```{r}
 print(model_run)
 ```
+
+\normalsize
 
 ## Bayesian computation with JAGS and Stan
 
@@ -247,7 +249,7 @@ model
 $$Y_i \sim N(\mu, \Sigma)$$
 where $Y_i$ is the vector of observations, $\mu$ a vector of means, and $\Sigma$ the covariance matrix
 
-- With missing data this can be a really hard likelihood to right down
+- With missing data this can be a fiddly likelihood to write down
 
 ## Multivariate imputation with ignorable monotone missingness
 
@@ -278,6 +280,8 @@ The first term we can write using our conditioning formula (see last class), and
 
 ## JAGS code for the ignorable monotone missingness case {.smaller}
 
+\small
+
 ```{r}
 model_code = '
 model
@@ -297,16 +301,21 @@ model
 '
 ```
 
+\normalsize
+
 ## Running the model
+
+\small
 
 ```{r, message=FALSE, results = 'hide', fig.height = 4}
 model_run = jags(data = list(N = nrow(whiteside3),
                              y1 = whiteside3$Temp, y2 = whiteside3$Gas),
                  parameters.to.save = c("y2"),
                  model.file = textConnection(model_code))
-plot(whiteside3$Temp, model_run$BUGSoutput$median$y2, col = is.na(whiteside3$Gas)+1)
+plot(whiteside3$Temp, model_run$BUGSoutput$median$y2, 
+     col = is.na(whiteside3$Gas)+1)
 ```
-
+\normalsize
 
 ## An alternative to Gibbs: the EM algorithm
 
@@ -323,7 +332,7 @@ plot(whiteside3$Temp, model_run$BUGSoutput$median$y2, col = is.na(whiteside3$Gas
 For a missing data analysis, EM works by first finding the expected complete-data likelihood for some parameter guesses $\theta^{(t)}$ at iteration $t$:
 
 - The E step
-$$Q(\theta | \theta^{(t)}) = \int P(\yo, \ym | \theta) \times P(\ym | \yo, \theta = \theta^{(t)}) d \ym$$
+$$Q(\theta | \theta^{(t)}) = \int P(\yo, \ym | \theta^{(t)}) \times P(\ym | \yo, \theta^{(t)}) d \ym$$
 - The M step then maximises this quantity:
 
 $$\theta^{(t+1)} = \argmax_\theta Q(\theta| \theta^{(t)})$$
@@ -332,13 +341,11 @@ It's easier to explain with an example!
 
 ## EM example for missing data
 
-Let's fit the monotone missingness example from above. We first need to compute:
-
-$$Q(\theta | \theta^{(t)}) = \int P(\yo, \ym | \theta) \times P(\ym | \yo, \theta = \theta^{(t)}) d \ym$$
+Let's fit the monotone missingness example from above. If the first $r$ values of $y_2$ are known then our missing parameters are $$\mu_1, \mu_2, \sigma_{11},\sigma_{12}, \sigma_{22}, y_{2,r + 1}, \ldots,y_{2, n}$$
 Some very dull algebra gives:
 
-$$y_{2i}^{(t+1)} = \mu_2^{(k)}+ \frac{\sigma_{12}^{(k)}}{\sigma_{11}^{(k)}} \left(y_{1i} - \mu_1^{(k)} \right) $$
-$$\sigma_{22}^{(k+1)} = \left( \sum (y_{2i}^{(k)})^2 - \frac{\left( \sum y_{2i}^{(k)} \right)^2}{n} \right) / n $$
+$$y_{2i}^{(k)} = \mu_2^{(k)}+ \frac{\sigma_{12}^{(k)}}{\sigma_{11}^{(k)}} \left(y_{1i} - \mu_1^{(k)} \right) $$
+$$\sigma_{jj}^{(k+1)} = \left( \sum (y_{ji}^{(k)})^2 - \frac{\left( \sum y_{ji}^{(k)} \right)^2}{n} \right) / n $$
 $$\sigma_{12}^{(k+1)} = \left( \sum  y_{1i} y_{2i}^{(k)} - \frac{\left( \sum y_{1i} \sum y_{2i}^{(k)} \right)^2}{n} \right) / n,\; \mu_2^{(k)} = \frac{ \sum y_{2i}^{(k)}}{ n}  $$
 
 
@@ -389,7 +396,7 @@ are all specified up front
 
 4. Draw parameters $\dot{\theta_j^t} \sim P(\theta_j^t | Y_j^{\mbox{obs}}, \dot{Y}^{t}_{-j}, M)$
 
-6. Draw imputations  Draw parameters $\dot{Y_j^t} \sim P(Y_j^{\mbox{mis}} | Y_j^{\mbox{obs}}, \dot{Y}^{t}_{-j}, M, \dot{\theta_j^t})$
+6. Draw imputations $\dot{Y_j^t} \sim P(Y_j^{\mbox{mis}} | Y_j^{\mbox{obs}}, \dot{Y}^{t}_{-j}, M, \dot{\theta_j^t})$
 
 ## Key aspects of the `mice` approach
 
@@ -437,7 +444,7 @@ The usual steps to working with `mice` is:
 
 ## Summary
 
-- We have seen the gold standard for imputation through Bayesian inference, though this doesn't always work well without strong prior information
+- We have seen the gold standard for imputation through Bayesian inference, though this doesn't always work well in situations where there is a high degree of missingness
 
 - We have seen an alternative technique which first imputes the data and then combines the parameter estimates
 
