@@ -1,6 +1,5 @@
 # An introduction to mice
 
-
 # Intro to Rstudio --------------------------------------------------------
 
 # A quick intro to Rstudio
@@ -42,7 +41,7 @@ md.pattern(nhanes)
 # Blue = observed, pink = missing
 
 # Fit a first regression model
-fit = lm(bmi ~ ., data = nhanes)
+fit = lm(chl ~ ., data = nhanes)
 summary(fit)
 # No warnings but how many values did it fit to?
 fit$fitted.values
@@ -110,7 +109,7 @@ imp5 = mice(nhanes, pred = pred, print = FALSE)
 
 # The default plotting uses (slightly ugly) lattice plots
 plot(imp5)
-# The rows of the plot specify the iteration number (note this is the iteration not the number of imputations which is the different lines). 
+# The x-axis of the plot specify the iteration number (note this is the iteration not the number of imputations which is the different lines). 
 # If it has 'worked' then the lines should jump around and not lie parallel
 # Remember - no age as it's fully observed
 # It's often worth increasing the number of iterations to get a better picture of convergence
@@ -132,7 +131,6 @@ imp6$method
 
 # Now look at the imputed values
 complete(imp6)
-
 
 # The full list of methods is given as:
 methods(mice)
@@ -164,4 +162,4 @@ pool_fit
 # lambda measures the proportion of total variance due to missingness the influence of the missing data on the model
 # riv is the residual increase in variance due to to missingness
 # fmi is the fraction of missing information
-# If these values are high (fmi > 0.5?) then this indicates a poorly fitting imputation model. You might want to remove some of the variables from the imputation predictor matri
+# If these values are high (fmi > 0.5?) then this indicates a poorly fitting imputation model. You might want to remove some of the variables from the imputation predictor matrix
