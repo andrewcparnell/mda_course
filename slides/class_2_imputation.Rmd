@@ -58,7 +58,7 @@ sum(dnorm(y, mean = 5.5 - 0.3*x, sd = 1, log = TRUE))
 
 - One way to find the 'best' parameters is to try lots and lots of different values and take the ones that provide the biggest log likelihood. This is very inefficient
 - Another way is to use mathematics - we can often maximise the likelihood using calculus. (We are not going to do this)
-- R has a number of very efficient built-in optimisation routines (e.g. `nlmin` and `optimx`) which will find the best values for us
+- R has a number of very efficient built-in optimisation routines (e.g. `nlminb` and `optimx`) which will find the best values for us
 
 ## Likelihood inference for missing data 
 
@@ -67,7 +67,7 @@ sum(dnorm(y, mean = 5.5 - 0.3*x, sd = 1, log = TRUE))
 y[5] = NA
 ```
 
-- Our parameters are now $\theta = (\alpha, \beta, \sigma, x_5)$. In R we could optimise via:
+- Our parameters are now $\theta = (y_5, \alpha, \beta, \sigma)$. In R we could optimise via:
 
 ```{r}
 nll = function(theta) {
@@ -173,8 +173,8 @@ model {
 ```{r, message = FALSE, results = 'hide'}
 library(R2jags)
 mod_par =  c("intercept", 
-                      "slope",
-                      "residual_sd")
+             "slope",
+             "residual_sd")
 model_run = jags(data = 
                    list(N = length(y), 
                         y = y, x = x),

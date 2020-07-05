@@ -3,8 +3,8 @@ title: 'Class 1: An introduction to Missing Data Analysis'
 author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace{1cm}
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
-  \newline PRESS RECORD 
   https://andrewcparnell.github.io/mda_course 
+  \newline PRESS RECORD 
 output:
   beamer_presentation:
     includes:
@@ -207,9 +207,10 @@ Let:
 :::: column 
 
 Now:
+
 - MCAR means $$P(m = 1 | \yo, \ym, \psi) = P(m = 1 | \psi)$$
 - MAR means $$P(m = 1 | \yo, \ym, \psi)$$ \ $$= P(m = 1 | \yo, \psi)$$
-- NMAR means $$P(m = 1 | \yo, \ym, \psi)$$ is not reducible!
+- NMAR means $$P(m = 1 | \yo, \ym, \psi)$$ must depend on $\ym$
 
 ::::
 
