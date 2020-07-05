@@ -97,7 +97,7 @@ imp4
 # This says which variables are used to impute the others
 # If you want to change the predictor matrix you can extract it, change it, then give it back to mice
 pred = imp4$predictorMatrix
-# Suppose you don't want hyptension to help you impute the variables
+# Suppose you don't want hypertension to help you impute the variables
 # This might occur when you have known collinearity or many variables
 pred[ ,"hyp"] <- 0
 pred
@@ -147,7 +147,7 @@ plot(imp7)
 # Running models with imputed data sets -----------------------------------
 
 # You can fit a model using the imputed object from a mice run
-fit4 = with(imp7, lm(bmi ~ chl + age + hyp)) # Annoyingly doesn't work with a data argument, or .
+fit4 = with(imp7, lm(chl ~ bmi + age + hyp)) # Annoyingly doesn't work with a data argument, or .
 summary(fit4) # This has fitted the model to each data set in turn
 
 # We can pick out individual fits, e.g.
