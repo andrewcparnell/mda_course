@@ -18,7 +18,7 @@
 # https://github.com/stefvanbuuren/mice
 # A number of vignettes and code examples at the bottom of that page
 # The whole mice book is here:
-# https://stefvanbuuren.name/fimd/sec-selective.html
+# https://stefvanbuuren.name/fimd/
 
 # The mice package --------------------------------------------------------
 

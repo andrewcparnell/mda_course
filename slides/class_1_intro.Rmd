@@ -383,6 +383,8 @@ points(rep(3.0, 5), imp_3$imp$Gas, col = 'green', pch = 3)
 
 - This works well if the sample size is large and so there are lots of candidate donors
 
+- (Also known as __Hot Deck__ imputation, cf __Cold Deck__ where external data is used to impute)
+
 ## General guidelines on imputation
 
 - If the missingness is ignorable, we need to fit a model of the form: $p(\yo | \ym, \theta)$

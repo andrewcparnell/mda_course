@@ -364,6 +364,21 @@ where $y_t^{-}$ represents previous values of the time series and $X$ represents
     - With missing $X$ values the approach on the previous slides will work fine
     - With missing $t$ values this starts to get fiddly, but it's still possible provided you can put a prior distribution on $t$
 
+## The `imputeTS` package
+
+- There is a nice R package for __single__imputation of time series called `imputeTS`
+
+- It will impute the missing values in $y_t$ via various methods:
+
+    - `na_kalman`	Missing Value Imputation by Kalman Smoothing
+    - `na_locf`	Missing Value Imputation by Last Observation Carried Forward
+    - `na_ma`	Missing Value Imputation by Weighted Moving Average
+    - `na_seadec`	Seasonally Decomposed Missing Value Imputation
+    - `na_seasplit`	Seasonally Splitted Missing Value Imputation
+
+- Running the stochastic methods multiple times might allow for multiple imputation
+
+- More details here: https://steffenmoritz.github.io/imputeTS/
 
 ## Back to MNAR
 
