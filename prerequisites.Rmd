@@ -22,7 +22,8 @@ Install the following using the corresponding links
 
 Now install the following packages by going into Rstudio (or R) by typing:
 ```{r,eval=FALSE}
-install.packages(c('mice', 'R2jags', 'lattice', 'mvtnorm', 'nlme', 'mlr', 'mlbench'))
+install.packages(c('mice', 'R2jags', 'lattice', 'mvtnorm', 'nlme', 
+'mlr', 'mlbench', 'VarSelLCM', 'mixtools))
 ```
 
 Note: this might take a few minutes so be patient!

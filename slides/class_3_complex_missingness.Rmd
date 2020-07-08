@@ -4,7 +4,6 @@ author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
   https://andrewcparnell.github.io/mda_course 
-  \newline PRESS RECORD 
 output:
   beamer_presentation:
     includes:
@@ -364,9 +363,10 @@ where $y_t^{-}$ represents previous values of the time series and $X$ represents
     - With missing $X$ values the approach on the previous slides will work fine
     - With missing $t$ values this starts to get fiddly, but it's still possible provided you can put a prior distribution on $t$
 
+
 ## The `imputeTS` package
 
-- There is a nice R package for __single__imputation of time series called `imputeTS`
+- There is a nice R package for __single__ imputation of time series called `imputeTS`
 
 - It will impute the missing values in $y_t$ via various methods:
 
@@ -399,7 +399,7 @@ $$p(y, M | \theta, \psi, x) = \prod_{i=1}^n p(y_i, m_i | \theta, \psi, x_i)$$
 - The _Selection_ model way:
 
 $$p(y_i, m_i | \theta, \psi, x_i) = p(y_i | x_i, \theta) \times p(m_i | x_i, y_i, \psi)$$
-Here the first factor is just a standard regression model, and the second factor is a binary regression which has $y$ has a covariate (with $x$) in the model. __Both models have to be fitted at the same time__
+Here the first term is just a standard regression model, and the second term is a binary regression which has $y$ as a covariate (with $x$) in the model. __Both models have to be fitted at the same time__
 
 - The _Pattern mixture_ model way:
 
@@ -445,9 +445,9 @@ $$y_i|m_i, x_i, \theta \sim N(\alpha^{(m_i)} + \beta x_i, \sigma^2) $$
 $$m_i|x_i, \psi \sim Binom(1, p_i),\; \mbox{logit}(p_i) = \gamma + \delta x_i$$
 ... so only a changing intercept between missing and non-missing data
 
-- This means that a simple statistic such as $\alpha_{m_1} - \alpha_{m_0}$ will tell you how the missing data are shifted up or down compared to the observed data
+- This means that a simple statistic such as $\alpha^{(m_1)} - \alpha^{(m_0)}$ will tell you how the missing data are shifted up or down compared to the observed data
 
-- Little and Rubin argue that the pattern mixture model is better because the interpretation of the parameter $\omega$ in the selection model is harder, and because imputed data values are easier to create in it
+- Little and Rubin argue that the pattern mixture model is better because the interpretation of the parameter $\omega$ in the selection model is harder, and because imputed data values are easier to simulate from
 
 ## Including extra assumptions
 
@@ -632,7 +632,7 @@ plot(model_run)
 
 ```{r, echo = FALSE, fig.height = 4}
 pars = model_run$BUGSoutput$sims.list
-par(mfrow=c(3,2))
+par(mfrow=c(2,3))
 hist(pars$alpha[,1], breaks = 30, main = 'Intercept (obs)'); abline(v = alpha, col='red')
 hist(pars$alpha[,2], breaks = 30, main = 'Intercept (miss)'); abline(v = alpha, col='red')
 hist(pars$beta, breaks = 30, main = 'Slope'); abline(v = beta, col='red')

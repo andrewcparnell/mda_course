@@ -4,6 +4,7 @@
 # Set up ------------------------------------------------------------------
 
 library(R2jags)
+library(mice)
 
 # Reminder of the nhanes data
 str(nhanes)
@@ -55,7 +56,7 @@ model_data2 = list(n = nrow(nhanes),
 # jags(data = model_data2,
 #      parameters.to.save = model_parameters,
 #      model.file=textConnection(model_code))
-# Interestingly this is because it is missing the bmi values, not because it is missing the chl values
+# Interestingly this fails because it is missing the bmi values, not because it is missing the chl values
 
 # Instead change the model structure
 model_code2 = '

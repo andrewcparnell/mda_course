@@ -4,8 +4,6 @@ author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
   https://andrewcparnell.github.io/mda_course 
-  \newline PRESS RECORD 
-  
 output:
   beamer_presentation:
     includes:
@@ -48,6 +46,7 @@ We might write such a model as:
 
 $$y_i = f(X_i) + \epsilon,\; \epsilon \sim N(0, \sigma^2)$$
 $$m_i \sim Bernoulli(p_i),\; \mbox{logit}(p_i) = \alpha + g(X_i) + \gamma y_i$$
+
 - Now both $f$ and $g$ need to take account of the high-dimensionality of $X_i$
 
 - For the Fully Conditional Specification (FCS) versions of these models, an $f_j$ will need to be proposed for every variable $y_i, X_{i1}, \ldots X_{ip}$
@@ -57,7 +56,7 @@ $$m_i \sim Bernoulli(p_i),\; \mbox{logit}(p_i) = \alpha + g(X_i) + \gamma y_i$$
 - Yadav _et al_, Handling missing values: A study of popular imputation packages in R, Knowledge-Based Systems,
 2018
 - Compared R packages `VIM`, `mice`, `MissForest`, and `HMISC`
-- Created 'fake' datasets by sub-sampling two classification data sets to contain 10k to 100k rows, and introduced 10-40% missingness. None of these
+- Created 'fake' datasets by sub-sampling two classification data sets to contain 10k to 100k rows, and introduced 10-40% missingness
 - They don't seem to have worried about whether this was MCAR, MAR or NMAR
 - They evaluated their methods based on:
     

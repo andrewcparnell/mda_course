@@ -4,7 +4,6 @@ author: Andrew Parnell \newline \texttt{andrew.parnell@mu.ie}   \newline \vspace
   \newline \includegraphics[width=3cm]{maynooth_uni_logo.jpg}
   \newline \vspace{1cm}
   https://andrewcparnell.github.io/mda_course 
-  \newline PRESS RECORD 
 output:
   beamer_presentation:
     includes:
