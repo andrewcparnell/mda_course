@@ -22,7 +22,7 @@ Time  | Class
 
 Time  | Class
 ------------- | ----------------------------------------------------
-9:00-10:15 | [Dealing with complex and non-ignorable missing data ](https://andrewcparnell.github.io/mda_course/slides/class_3_nimd.pdf). Missing data in longitudinal and time series data; The NMAR approach; Bayesian models for non-ignorable missingness
+9:00-10:15 | [Dealing with complex and non-ignorable missing data ](https://andrewcparnell.github.io/mda_course/slides/class_3_complex_missingness.pdf). Missing data in longitudinal and time series data; The NMAR approach; Bayesian models for non-ignorable missingness
 10:15-10:30 | Coffee break
-10:30-11:45 | [Missing data analysis in machine learning](https://andrewcparnell.github.io/mda_course/slides/class_2_imputation.pdf). Supervised and unsupervised learning with missing data; common machine learning models which allow missing data
+10:30-11:45 | [Missing data analysis in machine learning](https://andrewcparnell.github.io/mda_course/slides/class_4_missing_ML.pdf). Supervised and unsupervised learning with missing data; common machine learning models which allow missing data
 11:45-13:00 | [Practical 3](https://andrewcparnell.github.io/mda_course/practicals/prac_3_complex_missingness.R): NMAR models in JAGS R packages for dealing with missing data. [Practical 4](https://andrewcparnell.github.io/mda_course/practicals/prac_4_missing_ML.R): Machine learning R packages for dealing with missing data. 
