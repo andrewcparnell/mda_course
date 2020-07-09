@@ -43,12 +43,18 @@ str(imp$data)
 # If doing it properly, make sure to specify the target
 imp = impute(airquality, target = "Ozone")
 
+# Change the data slightly to allow a better imputation approach
+airq = airquality
+ind = sample(nrow(airq), 10)
+airq$Wind[ind] = NA
+airq$Wind = cut(airq$Wind, c(0,8,16,24))
+
 # Can separate into train and test
 airq = subset(airq, select = 1:4)
 airq.train = airq[1:100,] # Take the first 100 rows
 airq.test = airq[-c(1:100),]
 
-# Impute it using a better imputation approach
+# Fancier mlr imputation
 imp = impute(airq.train, target = "Ozone", 
              cols = list(Solar.R = imputeHist(), 
                          Wind = imputeLearner("classif.rpart")), 
