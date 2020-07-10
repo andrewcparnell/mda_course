@@ -208,7 +208,7 @@ where:
 
 - $\mbox{distance}_{ij}$ is the distance measurement for observation $i$ for individual $j$
 - $\mbox{age}_{ij}$ is the age associated observation $i$ for individual $j$
-- $\alpha_j$ is a random intercept term for each individual $j$ with some overall mean $\mu_j$ and a variability between individuals $\sigma_\alpha$
+- $\alpha_j$ is a random intercept term for each individual $j$ with some overall mean $\mu_\alpha$ and a variability between individuals $\sigma_\alpha$
 
 ## A JAGS model
 
@@ -403,15 +403,15 @@ Here the first term is just a standard regression model, and the second term is 
 
 - The _Pattern mixture_ model way:
 
-$$p(y_i, m_i | \theta, \psi, x_i) = p(y_i | x_i, m_i, \theta) \times p(m_i | x_i)$$
-Now the first distribution is a regression model that is dependent on whether the data are missing or not, and the second is just a very simple logistic regression model based on covariates $x$
+$$p(y_i, m_i | \theta, \psi, x_i) = p(y_i | x_i, m_i, \theta) \times p(m_i | x_i, \psi)$$
+Now the first distribution is a regression model that is dependent on whether the data are missing or not, and the second is just a very simple logistic regression model based on covariates $x$. This usually involves fitting __only__ the regression model because $m_i$ is data
 
 ## Issues with pattern mixture models
 
 Here's a simple example. Suppose we define a pattern mixture model as:
 
 $$y_i|m_i, x_i, \theta \sim N(\alpha^{(m_i)} + \beta^{(m_i)} x_i, (\sigma^{(m_i)})^2) $$
-$$m_i|x_i, \psi \sim Binom(1, p_i),\; \mbox{logit}(p_i) = \gamma + \delta x_i$$
+
 This means that there are different regression parameters for whether the data is missing or not. Of course, the problem is that you do not have any data $y_i$ when the data is missing ($m_i = 1$)!!!
 
 - __We need extra assumptions to fit this model__
@@ -442,12 +442,13 @@ This means that the coefficients of the binary missingness indicator will also b
 
 - A simpler version of the pattern mixture model is: 
 $$y_i|m_i, x_i, \theta \sim N(\alpha^{(m_i)} + \beta x_i, \sigma^2) $$
-$$m_i|x_i, \psi \sim Binom(1, p_i),\; \mbox{logit}(p_i) = \gamma + \delta x_i$$
 ... so only a changing intercept between missing and non-missing data
 
 - This means that a simple statistic such as $\alpha^{(m_1)} - \alpha^{(m_0)}$ will tell you how the missing data are shifted up or down compared to the observed data
 
 - Little and Rubin argue that the pattern mixture model is better because the interpretation of the parameter $\omega$ in the selection model is harder, and because imputed data values are easier to simulate from
+
+- However it needs strong assumptions on the missing intercept to fit properly
 
 ## Including extra assumptions
 
@@ -561,20 +562,16 @@ model
 {
   # Likelihood
   for (i in 1:N) {
-    # Note: miss[i] = 1 if not-missing and miss[i] = 2 if missing
-    y[i] ~ dnorm(alpha[miss[i]] + beta * x[i], sigma^-2)
-    m[i] ~ dbern(p[i])
-    logit(p[i]) = gamma + delta * (x[i] - mean(x))
+    # Note: m[i] = 1 if not-missing and m[i] = 2 if missing
+    y[i] ~ dnorm(alpha[m[i]] + beta * x[i], sigma^-2)
   }
   # Priors for regression model
   alpha[1] ~ dnorm(0, 100^-2)
-  alpha[2] ~ dnorm(alpha[1], sigma_alpha^-2)
+  # This is the key prior
+  alpha[2] ~ dnorm(alpha[1] + 0.5, sigma_alpha^-2)
   beta ~ dnorm(0, 100^-2)
   sigma ~ dgamma(1, 1)
   sigma_alpha ~ dgamma(1, 1)
-  # Priors for missingness model
-  gamma ~ dnorm(0, 5^-2)
-  delta ~ dnorm(0, 5^-2)
 }
 '
 ```
@@ -591,10 +588,10 @@ set.seed(123)
 N = 100
 x = sort(runif(N))
 gamma = -0.5
-delta = 1
+delta = 3
 m = rbinom(N, 1, plogis(gamma + 
       delta * (x - mean(x)))) + 1
-alpha = c(3,3.3)
+alpha = c(3,3.5)
 beta = 2
 sigma = 0.2
 y_true = rnorm(N, alpha[m] + 
@@ -620,9 +617,9 @@ points(x, y, col = 'red', pch = 19)
 ## Output
 
 ```{r, echo = FALSE, warning = FALSE, results = 'hide', message = FALSE, fig.height = 4}
-mod_par =  c("alpha", "beta", "sigma", "gamma", "delta", "y")
+mod_par =  c("alpha", "beta", "sigma", "y", "sigma_alpha")
 model_run = jags(data = 
-                   list(N = N, y = y, x = x, miss = m, m = m - 1),
+                   list(N = N, y = y, x = x, m = m),
                  parameters.to.save = mod_par,
                  model.file = textConnection(model_code))
 plot(model_run)
@@ -632,12 +629,11 @@ plot(model_run)
 
 ```{r, echo = FALSE, fig.height = 4}
 pars = model_run$BUGSoutput$sims.list
-par(mfrow=c(2,3))
+par(mfrow=c(2,2))
 hist(pars$alpha[,1], breaks = 30, main = 'Intercept (obs)'); abline(v = alpha, col='red')
 hist(pars$alpha[,2], breaks = 30, main = 'Intercept (miss)'); abline(v = alpha, col='red')
 hist(pars$beta, breaks = 30, main = 'Slope'); abline(v = beta, col='red')
-hist(pars$gamma, breaks = 30, main = 'Miss intercept'); abline(v = gamma, col='red')
-hist(pars$delta, breaks = 30, main = 'Miss coef of x'); abline(v = delta, col='red')
+hist(pars$sigma, breaks = 30, main = 'Residual sd'); abline(v = sigma, col='red')
 par(mfrow=c(1,1))
 ```
 
