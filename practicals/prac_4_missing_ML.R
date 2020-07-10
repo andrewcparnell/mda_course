@@ -59,7 +59,7 @@ imp = impute(airq.train, target = "Ozone",
              cols = list(Solar.R = imputeHist(), 
                          Wind = imputeLearner("classif.rpart")), 
              dummy.cols = c("Solar.R", "Wind"))
-summary(imp$data)
+str(imp$data)
 
 # And the imputation description
 imp$desc
@@ -78,7 +78,8 @@ data(faithful)
 faithful[1,1] = NA # Just to show it works with NAs
 
 # You can play with gvals which might be more interesting than just two clusters, especially for variable selection
-res = VarSelCluster(faithful, gvals = 2, vbleSelec = FALSE, crit.varsel = "BIC")
+res = VarSelCluster(faithful, gvals = 2, 
+                    vbleSelec = FALSE, crit.varsel = "BIC")
 
 # Plot the output
 plot(faithful)

@@ -250,7 +250,7 @@ plot(x, y_true)
 points(x, y, col = 'red', pch = 19)
 
 # Run the model
-mod_par =  c("alpha", "beta", "sigma", "gamma", "delta", "y")
+mod_par =  c("alpha", "beta", "sigma", "gamma", "delta", "y", "sigma_alpha")
 model_run = jags(data = list(N = N, y = y, x = x, miss = m, m = m - 1),
                  parameters.to.save = mod_par,
                  model.file = textConnection(model_code))
