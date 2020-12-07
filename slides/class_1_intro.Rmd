@@ -21,11 +21,13 @@ set.seed(123)
 
 ## Let's get started
 
-- Introduction from Novartis
+- Welcome and introduction
 
 - Timetable for the course
 
 - Pre-requisites
+
+    - Please install these when you get ten spare minutes
 
 ## How this course works
 
@@ -51,10 +53,10 @@ It helps if you know a little bit about multivariate distributions such as the m
 
 ## Course format and other details
 
-- We do two lectures in the morning (separated by a coffee break) then have a practical class where we go through some R code together
+- We will do two lectures (separated by a coffee break) then have a practical class where we go through some R code and you get a chance to work by yourself
 - If you want to send me a private message use the message board and I will try to answer them as we go
 - Please ask lots of questions, but __MUTE YOUR MICROPHONE__ when not asking them
-- Some good books:
+- Some books:
 
     - _Statistical Analysis with Missing Data_ by Little and Rubin 
     - _Bayesian Data Analysis_ by Gelman et al (chapter on Missing Data Analysis)

@@ -1,28 +1,25 @@
 ---
 title: "Introduction to Missing Data Analysis: course timetable"
 author: "Andrew Parnell"
-date: "July 2020 - online version"
+date: "December 2020 - online version"
 output: html_document
 ---
 
-Module pre-requisites can be found [here](https://andrewcparnell.github.io/mda_course/prerequisites.html). All the raw files and code can be found [here](https://www.github.com/andrewcparnell/mda_course) (click 'Code > Download ZIP' near the top right if you want offline versions of everything). All links below are in pdf format for you to annotate. 
+Module pre-requisites can be found [here](https://andrewcparnell.github.io/mda_course/prerequisites.html). Please install these when you have 10 spare minutes. All the raw files and code can be found [here](https://www.github.com/andrewcparnell/mda_course) (click 'Code > Download ZIP' near the top right if you want offline versions of everything). All links below are in pdf format for you to annotate. 
 
 Please note that the course will be recorded so please turn off video if you do not wish to be shown on the recordings. 
 
-## Day 1: Standard techniques for dealing with missing data
-
 Time  | Class
 ------------- | ----------------------------------------------------
-9:00-10:15 | [Introduction to missing data analysis](https://andrewcparnell.github.io/mda_course/slides/class_1_intro.pdf). Types of missing data; example data sets; missing data nomenclature, simple and multiple imputation 
-10:15-10:30 | Coffee break
-10:30-11:45 | [Likelihood and Bayesian imputation methods](https://andrewcparnell.github.io/mda_course/slides/class_2_imputation.pdf). Bayesian inference for missing data, Using the EM algorithm for imputation; The mice algorithm and approach
-11:45-13:00 | [Practical 1](https://andrewcparnell.github.io/mda_course/practicals/prac_1_mice.R): Using the `mice` package. [Practical 2](https://andrewcparnell.github.io/mda_course/practicals/prac_2_jags_mda.R): Missing data analysis with JAGS
+14:05-14:55 | [Introduction to missing data analysis](https://andrewcparnell.github.io/mda_course/slides/class_1_intro.pdf). Types of missing data; example data sets; missing data nomenclature, simple and multiple imputation 
+14:55-15:05 | Coffee break
+15:05-15:55 | [Likelihood and Bayesian imputation methods](https://andrewcparnell.github.io/mda_course/slides/class_2_imputation.pdf). Bayesian inference for missing data; Using the EM algorithm for imputation; The mice algorithm and approach
+15:55-16:05 | Coffee break
+16:05-16:55 | [Practical 1](https://andrewcparnell.github.io/mda_course/practicals/prac_1_mice.R): Using the `mice` package. [Practical 2](https://andrewcparnell.github.io/mda_course/practicals/prac_2_jags_mda.R): Missing data analysis with JAGS
 
-## Day 2: Complex imputation and missing data analysis in machine learning
+Extra topics
 
-Time  | Class
-------------- | ----------------------------------------------------
-9:00-10:15 | [Dealing with complex and non-ignorable missing data ](https://andrewcparnell.github.io/mda_course/slides/class_3_complex_missingness.pdf). Missing data in longitudinal and time series data; The NMAR approach; Bayesian models for non-ignorable missingness
-10:15-10:30 | Coffee break
-10:30-11:45 | [Missing data analysis in machine learning](https://andrewcparnell.github.io/mda_course/slides/class_4_missing_ML.pdf). Supervised and unsupervised learning with missing data; common machine learning models which allow missing data
-11:45-13:00 | [Practical 3](https://andrewcparnell.github.io/mda_course/practicals/prac_3_complex_missingness.R): NMAR models in JAGS R packages for dealing with missing data. [Practical 4](https://andrewcparnell.github.io/mda_course/practicals/prac_4_missing_ML.R): Machine learning R packages for dealing with missing data. 
+  - [Dealing with complex and non-ignorable missing data ](https://andrewcparnell.github.io/mda_course/slides/class_3_complex_missingness.pdf). Missing data in longitudinal and time series data; The NMAR approach; Bayesian models for non-ignorable missingness
+  - [Missing data analysis in machine learning](https://andrewcparnell.github.io/mda_course/slides/class_4_missing_ML.pdf). Supervised and unsupervised learning with missing data; common machine learning models which allow missing data
+  - [Extra practical 1](https://andrewcparnell.github.io/mda_course/practicals/prac_3_complex_missingness.R): NMAR models in JAGS; R packages for dealing with missing data.
+  - [Extra practical 4](https://andrewcparnell.github.io/mda_course/practicals/prac_4_missing_ML.R): R packages for dealing with missing data in machine learning. 

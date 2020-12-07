@@ -163,3 +163,13 @@ pool_fit
 # riv is the residual increase in variance due to to missingness
 # fmi is the fraction of missing information
 # If these values are high (fmi > 0.5?) then this indicates a poorly fitting imputation model. You might want to remove some of the variables from the imputation predictor matrix
+
+
+# Other tasks -------------------------------------------------------------
+
+# You could try some of the same analysis on the other data sets in the mice package
+# See data(package = 'mice')
+# And then pick your favourite
+# 
+
+
