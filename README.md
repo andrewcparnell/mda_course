@@ -1,4 +1,4 @@
-# 2 day course: Introduction to Missing data analysis
+# Training course: Introduction to Missing Data Analysis
 
 ## About
 
